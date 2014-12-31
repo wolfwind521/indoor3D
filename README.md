@@ -94,13 +94,18 @@ indoorMap.showLabels(true);
 the style of the ui is defined in the css file. so you can specify it by yourself.
 
 #User Reference
+There are two main classes:
+  -IndoorMap
+  -Mall
+
+
 ## IndoorMap
 ###methods:
 **.load(fileName, callback)**
 
 loads a file. 
 When it finishes loading, the callback functon is called.
-Since the ui can only be constructed after the data is fully loaded, so the `getUi()` function must be called in the callback.
+Since the ui can only be constructed after the data is fully loaded, so the `getUI()` function must be called in the callback.
 
 **.adjustCamera**
 
