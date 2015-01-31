@@ -8,8 +8,7 @@
 <script src="js/three.min.js"></script>
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
-<script src="js/IndoorMapTheme.js"></script>
-<script src="js/Indoor3D.js"></script>
+<script src="js/IndoorMap.js"></script>
 <script src="js/stats.min.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 
@@ -22,10 +21,11 @@
     animate();
 
     var params = {
-        mapDiv:"indoor3d"
+        mapDiv:"indoor3d",
+        dim:"2d"
     }
-    var indoorMap = new Indoor3D(params);
-    indoorMap.load('B000A9R4FE.json', function(){
+    var indoorMap = new IndoorMap(params);
+    indoorMap.load('data/B000A9R4FE.json', function(){
         indoorMap.showFloor(1);
         indoorMap.showLabels(true);
         indoorMap.setSelectable(true);

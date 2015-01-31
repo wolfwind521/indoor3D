@@ -7,6 +7,7 @@
 function Mall(){
     var _this = this;
     this.floors = [];   //the object3d of the floors
+    this.floorNames = [];
     this.building = null; //the building
     this.root = new THREE.Object3D(); //the root scene
     this.theme = defaultTheme; //theme
@@ -222,11 +223,12 @@ var defaultTheme = {
     }
 }
 //----------------------------the Loader class --------------------------
-IndoorMapLoader= function ( showStatus ) {
+IndoorMapLoader= function ( is3d ) {
 
-    THREE.Loader.call( this, showStatus );
+    THREE.Loader.call( this, is3d );
 
     this.withCredentials = false;
+    this.is3d = is3d;
 
 };
 
@@ -350,11 +352,14 @@ IndoorMapLoader.prototype.parse = function ( json ) {
             floorObj.add(mesh);
             floorObj.points = [];
             floorObj.id = floor._id;
+            var index;
             if(floorid < 0) { //underfloors
-                mall.floors[floorid + underfloors] = floorObj;
+                index = floorid + underfloors;
             }else{ // ground floors, id starts from 1
-                mall.floors[floorid - 1 + underfloors] = floorObj;
+                index = floorid - 1 + underfloors;
             }
+            mall.floors[index] = floorObj;
+            mall.floorNames[index] = ''+floorObj.id;
             //funcArea geometry
             for(var j=0; j<floor.FuncAreas.length; j++){
 
@@ -366,9 +371,14 @@ IndoorMapLoader.prototype.parse = function ( json ) {
                 floorObj.points.push({ name: funcArea.Name, type: funcArea.Type, position: new THREE.Vector3(center.x * scale, floorHeight * scale, -center.y * scale )});
 
                 //solid model
-                extrudeSettings = {amount: floorHeight, bevelEnabled: false};
-                geometry = new THREE.ExtrudeGeometry(shape,extrudeSettings);
-                material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type));
+                if(scope.is3d) {
+                    extrudeSettings = {amount: floorHeight, bevelEnabled: false};
+                    geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                    material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type));
+                }else{
+                    geometry = new THREE.ShapeGeometry(shape);
+                    material = new THREE.MeshBasicMaterial(mall.theme.room(funcArea.Type));
+                }
                 mesh = new THREE.Mesh(geometry, material);
                 mesh.type = "solidroom";
                 mesh.name = funcArea.Name;
@@ -381,18 +391,10 @@ IndoorMapLoader.prototype.parse = function ( json ) {
 
                 //top wireframe
                 wire = new THREE.Line(geometry, new THREE.LineBasicMaterial(mall.theme.roomWire));
-                wire.position.set(0,0, floorHeight);
+                if(scope.is3d) {
+                    wire.position.set(0, 0, floorHeight);
+                }
                 floorObj.add(wire);
-
-//                //verticle lines
-//                geometry = new THREE.Geometry();
-//                geometry.vertices.push(new THREE.Vector3(0,0,0));
-//                geometry.vertices.push(new THREE.Vector3(0,0,floorHeight));
-//                for(var k=0; k<points.length; k++){
-//                    var line = new THREE.Line(geometry, mall.theme.roomWireMat);
-//                    line.position.set(points[k].x, points[k].y, 0);
-//                    room.add(line);
-//                }
 
 
             }
@@ -408,14 +410,17 @@ IndoorMapLoader.prototype.parse = function ( json ) {
         //building geometry
         building = json.data.building;
         points = parsePoints(building.Outline[0][0]);
-        shape = new THREE.Shape(points);
-        extrudeSettings = {amount: buildingHeight, bevelEnabled: false};
-        geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial(mall.theme.building));
 
-        mall.building = mesh;
+        if(points.length > 0) {
+                shape = new THREE.Shape(points);
+                extrudeSettings = {amount: buildingHeight, bevelEnabled: false};
+                geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial(mall.theme.building));
+
+                mall.building = mesh;
+        }
         mall.root.name = building.Name;
-        mall.floorNames = building.FloorsId.split(",");
+        //mall.floorNames = building.FloorsId.split(",");
         mall.remark = building.Remark;
 
         //scale the mall
@@ -447,9 +452,9 @@ IndoorMapLoader.prototype.parse = function ( json ) {
     return parseModels( );
 };
 
-//-----------------------------the Indoor3D class ------------------------------------
+//-----------------------------the IndoorMap class ------------------------------------
 
-var Indoor3D = function (params) {
+var IndoorMap = function (params) {
     var _this = this;
     var _scene, _controls, _renderer, _projector, _rayCaster;
     var _mapDiv, _canvasDiv, _labelsRoot, _uiRoot, _uiSelected;
@@ -457,6 +462,7 @@ var Indoor3D = function (params) {
     var _showLabels = false;
     var _curFloorId = 0;
     var _fullScreen = false;
+    this.is3d = true;
 
     //initialization
     this.init = function (params) {
@@ -465,13 +471,17 @@ var Indoor3D = function (params) {
         if (!(typeof params === "undefined") && params.hasOwnProperty("mapDiv")) {
             _mapDiv = document.getElementById(params.mapDiv);
         }
+        if(!(typeof params === "undefined") && params.hasOwnProperty("dim")){
+            if(params.dim == "2d"){
+                _this.is3d = false;
+            }
+        }
+
         if(_mapDiv != null){
             _fullScreen = false;
         } else {
             //if the mapDiv undefined, create a fullscreen map
             _mapDiv = document.createElement("div");
-//            _mapDiv.style.width = window.innerWidth + "px";
-//            _mapDiv.style.height = window.innerHeight + "px";
             _mapDiv.style.width = window.innerWidth + "px";
             _mapDiv.style.height = window.innerHeight + "px";
             _mapDiv.id = "indoor3d";
@@ -485,17 +495,23 @@ var Indoor3D = function (params) {
         _scene = new THREE.Scene();
         _this.camera = new THREE.PerspectiveCamera(20, _mapDiv.clientWidth / _mapDiv.clientHeight, 0.1, 2000);
         _controls = new THREE.OrbitControls(_this.camera);
-        _this.resetCamera();
+
 
         // webgl detection
         if (Detector.webgl) {
             _renderer = new THREE.WebGLRenderer({ antialias: true });
-            _controls.usingWebgl = true;
+            if(_this.is3d) {
+                _controls.is3d = true;
+            }else{
+                _controls.is3d = false;
+            }
         } else {
             _renderer = new THREE.CanvasRenderer();
-            _controls.usingWebgl = false;
+            _controls.is3d = false;
+            _this.is3d = false;
         }
 
+        _this.resetCamera();
         _renderer.setSize(_mapDiv.clientWidth, _mapDiv.clientHeight);
         _canvasDiv = _renderer.domElement
         _mapDiv.appendChild(_canvasDiv);
@@ -503,19 +519,26 @@ var Indoor3D = function (params) {
         _canvasDiv.style.width = "100%";
         _canvasDiv.style.height = "100%";
 
-        //set up the lights
-        var light = new THREE.DirectionalLight(0xffffff);
-        light.position.set(500, 500, 500);
-        _scene.add(light);
+        if(_this.is3d) {
 
-        var light = new THREE.DirectionalLight(0xffffff);
-        light.position.set(-500, 500, -500);
-        _scene.add(light);
+            //set up the lights
+            var light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(500, 500, 500);
+            _scene.add(light);
+
+            var light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(-500, 500, -500);
+            _scene.add(light);
+        }else{
+            var light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(0,500,0);
+            _scene.add(light);
+        }
     }
 
     //load the map by the jason file name
     this.load = function (fileName, callback) {
-        var loader = new IndoorMapLoader(true);
+        var loader = new IndoorMapLoader(_this.is3d);
         loader.load(fileName, function(mall){
             _this.mall = mall;
             _scene.add(_this.mall.root);
@@ -532,9 +555,19 @@ var Indoor3D = function (params) {
         });
     }
 
+    //parse the json file
+    this.parse = function(json){
+        var loader = new IndoorMapLoader(_this.is3d);
+        loader.parse(json);
+    }
+
     //reset the camera to default configuration
     this.resetCamera = function () {
-        _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
+        if(_this.is3d) {
+            _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
+        }else{
+            _this.camera.position.set(0, 500, 0);
+        }
         _this.camera.lookAt(_scene.position);
         _controls.reset();
     }
