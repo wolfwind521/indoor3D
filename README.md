@@ -63,19 +63,19 @@ a little more complex example：
   - Detector: detects whether the browser support the webgl. if it does not, threejs switches to a normal canvas renderer.
   - OrbitControls: handles the user interactions to zoom, pan and pivot
 
-2) set up the parent <div> node of the indoor map and pass the params
-```html
+2) set up the parent `<div>` node of the indoor map and pass the params
+```js
 var params={mapDiv:"indoor3d"};
 var indoorMap = new Indoor3D(params);
 ```
 So there must be a corresponding `<div id="indoor3d">` tag in your html codes, or it will create a fullscreen map.
 If there is no params passed to Indoor3D, it will create a fullscreen one as well:
-```html
+```js
 var indoorMap = new Indoor3D();
 ```
 
 3) load the map data, and set up its styles.
-```html
+```js
 indoorMap.load('B000A9R4FE.json', function(){
         indoorMap.showAllsFloor();
         indoorMap.setSelectable(true);
@@ -85,7 +85,7 @@ indoorMap.load('B000A9R4FE.json', function(){
 ```
 the second parameter of the load() function is a callback function when the data is loaded.
 if you don't need the ui, you can also set the style outside the callback function:
-```html
+```js
 indoorMap.load('B000A9R4FE.json');
 indoorMap.showFloor(1);
 indoorMap.setSelectable(true);
