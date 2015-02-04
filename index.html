@@ -10,6 +10,7 @@
 <script src="js/OrbitControls.js"></script>
 <script src="js/IndoorMap.js"></script>
 <script src="js/stats.min.js"></script>
+<script src="js/Canvas2DRenderer.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 
 <div id="indoor3d" style="width: 800px; height: 500px"></div>
@@ -27,10 +28,11 @@
     var indoorMap = new IndoorMap(params);
     indoorMap.load('data/B000A9R4FE.json', function(){
         indoorMap.showFloor(1);
-        indoorMap.showLabels(true);
-        indoorMap.setSelectable(true);
-        var ul = indoorMap.getUI();
-        document.body.appendChild(ul);
+        indoorMap.draw();
+        //indoorMap.showLabels(true);
+        //indoorMap.setSelectable(true);
+        //var ul = indoorMap.getUI();
+        //document.body.appendChild(ul);
     });
     function animate(){
         requestAnimationFrame(animate);

@@ -6,11 +6,11 @@
 //---------------------the Mall class--------------------
 function Mall(){
     var _this = this;
-    this.floors = [];   //the object3d of the floors
-    this.floorNames = [];
+    this.floors = [];   //the floors
     this.building = null; //the building
     this.root = new THREE.Object3D(); //the root scene
     this.theme = defaultTheme; //theme
+    this.is3d = true;
 
     var _curFloorId;
 
@@ -22,7 +22,17 @@ function Mall(){
     //get floor by id
     this.getFloor = function(id) {
         for(var i = 0; i < _this.floors.length; i++) {
-            if(_this.floors[i].id == id) {
+            if(_this.floors[i]._id == id) {
+                return _this.floors[i];
+            }
+        }
+        return null;
+    }
+
+    //get floor by name
+    this.getFloorByName = function(name){
+        for(var i = 0; i < _this.floors.length; i++) {
+            if(_this.floors[i].Name == name) {
                 return _this.floors[i];
             }
         }
@@ -36,16 +46,18 @@ function Mall(){
 
     //show floor by id
     this.showFloor = function(id){
-        //set the building outline to invisible
-        _this.root.remove(_this.building);
-        //set all the floors to invisible
-        for(var i=0; i<_this.floors.length; i++){
-            if(_this.floors[i].id == id){
-                //set the specific floor to visible
-                _this.floors[i].position.set(0,0,0);
-                _this.root.add(_this.floors[i]);
-            }else {
-                _this.root.remove(_this.floors[i]);
+        if(_this.is3d) {
+            //set the building outline to invisible
+            _this.root.remove(_this.building);
+            //set all the floors to invisible
+            for (var i = 0; i < _this.floors.length; i++) {
+                if (_this.floors[i]._id == id) {
+                    //set the specific floor to visible
+                    _this.floors[i].position.set(0, 0, 0);
+                    _this.root.add(_this.floors[i]);
+                } else {
+                    _this.root.remove(_this.floors[i]);
+                }
             }
         }
         _curFloorId = id;
@@ -53,6 +65,9 @@ function Mall(){
 
     //show the whole building
     this.showAllFloors = function(){
+        if(!_this.is3d){ //only the 3d map can show all the floors
+            return;
+        }
 
         _this.root.add(_this.building);
 
@@ -319,7 +334,7 @@ IndoorMapLoader.prototype.parse = function ( json ) {
 
     //get the center of some points
     function getCenter(points){
-        var center = new THREE.Vector3(0,0,0);
+        var center = new THREE.Vector2(0,0);
         for(var i=0; i<points.length; i++){
             center.add(points[i]);
         }
@@ -327,7 +342,7 @@ IndoorMapLoader.prototype.parse = function ( json ) {
         return center;
     }
 
-    function parseModels() {
+    function parse3DModels() {
         var building,shape, extrudeSettings, geometry, material, mesh, wire, color, points;
         var scale = 0.1, floorHeight, buildingHeight = 0;
         var underfloors = json.data.building.UnderFloors;
@@ -351,7 +366,7 @@ IndoorMapLoader.prototype.parse = function ( json ) {
             floorObj.height = floorHeight;
             floorObj.add(mesh);
             floorObj.points = [];
-            floorObj.id = floor._id;
+            floorObj._id = floor._id;
             var index;
             if(floorid < 0) { //underfloors
                 index = floorid + underfloors;
@@ -359,7 +374,6 @@ IndoorMapLoader.prototype.parse = function ( json ) {
                 index = floorid - 1 + underfloors;
             }
             mall.floors[index] = floorObj;
-            mall.floorNames[index] = ''+floorObj.id;
             //funcArea geometry
             for(var j=0; j<floor.FuncAreas.length; j++){
 
@@ -382,6 +396,7 @@ IndoorMapLoader.prototype.parse = function ( json ) {
                 mesh = new THREE.Mesh(geometry, material);
                 mesh.type = "solidroom";
                 mesh.name = funcArea.Name;
+                mesh.id = funcArea._id;
                 floorObj.add(mesh);
 
                 geometry = shape.createPointsGeometry();
@@ -420,7 +435,6 @@ IndoorMapLoader.prototype.parse = function ( json ) {
                 mall.building = mesh;
         }
         mall.root.name = building.Name;
-        //mall.floorNames = building.FloorsId.split(",");
         mall.remark = building.Remark;
 
         //scale the mall
@@ -449,7 +463,17 @@ IndoorMapLoader.prototype.parse = function ( json ) {
         return shapePoints;
     }
 
-    return parseModels( );
+    mall.is3d = scope.is3d;
+    if(scope.is3d){//3d map
+        return parse3DModels();
+    }else{//2d map
+        mall.jsonData = json;
+        for(var i = 0; i < json.data.Floors.length; i++){
+            mall.floors.push(json.data.Floors[i]);
+            mall.building = json.data.building;
+        }
+        return mall;
+    }
 };
 
 //-----------------------------the IndoorMap class ------------------------------------
@@ -498,18 +522,23 @@ var IndoorMap = function (params) {
 
 
         // webgl detection
-        if (Detector.webgl) {
+        if (Detector.webgl && _this.is3d) {
             _renderer = new THREE.WebGLRenderer({ antialias: true });
-            if(_this.is3d) {
-                _controls.is3d = true;
-            }else{
-                _controls.is3d = false;
-            }
+            var light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(-500, 500, -500);
+            _scene.add(light);
+
         } else {
+            //_renderer = new Canvas2DRenderer();
             _renderer = new THREE.CanvasRenderer();
             _controls.is3d = false;
             _this.is3d = false;
         }
+
+        //set up the lights
+        var light = new THREE.DirectionalLight(0xffffff);
+        light.position.set(500, 500, 500);
+        _scene.add(light);
 
         _this.resetCamera();
         _renderer.setSize(_mapDiv.clientWidth, _mapDiv.clientHeight);
@@ -519,21 +548,7 @@ var IndoorMap = function (params) {
         _canvasDiv.style.width = "100%";
         _canvasDiv.style.height = "100%";
 
-        if(_this.is3d) {
 
-            //set up the lights
-            var light = new THREE.DirectionalLight(0xffffff);
-            light.position.set(500, 500, 500);
-            _scene.add(light);
-
-            var light = new THREE.DirectionalLight(0xffffff);
-            light.position.set(-500, 500, -500);
-            _scene.add(light);
-        }else{
-            var light = new THREE.DirectionalLight(0xffffff);
-            light.position.set(0,500,0);
-            _scene.add(light);
-        }
     }
 
     //load the map by the jason file name
@@ -542,6 +557,7 @@ var IndoorMap = function (params) {
         loader.load(fileName, function(mall){
             _this.mall = mall;
             _scene.add(_this.mall.root);
+            _scene.mall = mall;
             if(callback) {
                 callback();
             }
@@ -648,7 +664,7 @@ var IndoorMap = function (params) {
                 text = document.createTextNode(_this.mall.floorNames[i]);
                 li.appendChild(text);
                 li.onclick = function () {
-                    _this.showFloor(_this.mall.floors[arg].id);
+                    _this.showFloor(_this.mall.floors[arg]._id);
                 }
                 _uiRoot.appendChild(li);
             })(i);
@@ -659,6 +675,30 @@ var IndoorMap = function (params) {
     //get the selected object
     this.getSelected = function(){
         return _selected;
+    }
+
+    //get the selected object
+    this.getSelectedId = function(){
+        return _selected.id;
+    }
+
+    //select object by id
+    this.selectById = function(id){
+        var floor = _this.getCurFloor();
+        for(var i = 0; i < floor.children.length; i++){
+            if(floor.children[i].id && floor.children[i].id == id) {
+                if (_selected) {
+                    _selected.material.color.setHex(_selected.currentHex);
+                }
+                _this.select(floor.children[i]);
+            }
+        }
+    }
+
+    //select object(just hight light it)
+    this.select = function(obj){
+        obj.currentHex = _selected.material.color.getHex();
+        obj.material.color.setHex(_this.mall.theme.selected);
     }
 
     //show the floor by id
@@ -792,6 +832,10 @@ var IndoorMap = function (params) {
         }
     }
 
+    this.draw = function(){
+        _renderer.render(_scene, _this.camera);
+    }
+
     function onSelectObject() {
         // find intersections
         event.preventDefault();
@@ -815,8 +859,7 @@ var IndoorMap = function (params) {
                 for(var i=0; i<intersects.length; i++) {
                     _selected = intersects[ i ].object;
                     if(_selected.type && _selected.type == "solidroom") {
-                        _selected.currentHex = _selected.material.color.getHex();
-                        _selected.material.color.setHex(_this.mall.theme.selected);
+                        _this.select(_selected);
                         break;
                     }else{
                         _selected = null;

@@ -107,6 +107,13 @@ loads a file.
 When it finishes loading, the callback functon is called.
 Since the ui can only be constructed after the data is fully loaded, so the `getUI()` function must be called in the callback.
 
+if the file is already loaded by other modules, you should use the `.parse(jsonData)` method instead
+
+**.parse(jsonData)**
+
+parse the json Data.
+if the jsonData is loaded by other modules, you can just use this function to pass it to the indoor map
+
 **.adjustCamera**
 
 Resets the camera to its default settings. This function is called when switching floors
@@ -126,10 +133,13 @@ returns a `<ul>` tag with all the floor id. The user can switch the floor by cli
 You can insert the `<ul>` to anywhere in the html.
 Make sure to call this method only after the map is loaded.
 
-**.getSelected()**
+**.getSelectedId()**
 
-get the selected `[THREE.Object3D]`(http://threejs.org/docs/#Reference/Core/Object3D).
-You can get the object's name by using `.getSelected().name`, more properties will be added later.
+get the selected shop's id
+
+**.selectById()**
+
+select the shop by its id
 
 **.showFloor(id)**
 
