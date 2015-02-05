@@ -23,14 +23,13 @@
 
     var params = {
         mapDiv:"indoor3d",
-        dim:"2d"
     }
     var indoorMap = new IndoorMap(params);
     indoorMap.load('data/B000A9R4FE.json', function(){
         indoorMap.showFloor(1);
         indoorMap.draw();
         //indoorMap.showLabels(true);
-        //indoorMap.setSelectable(true);
+        indoorMap.setSelectable(true);
         //var ul = indoorMap.getUI();
         //document.body.appendChild(ul);
     });

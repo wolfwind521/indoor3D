@@ -486,6 +486,7 @@ var IndoorMap = function (params) {
     var _showLabels = false;
     var _curFloorId = 0;
     var _fullScreen = false;
+    var _selectionListener = null;
     this.is3d = true;
 
     //initialization
@@ -682,6 +683,11 @@ var IndoorMap = function (params) {
         return _selected.id;
     }
 
+    //the callback function when sth is selected
+    this.setSelectionListener = function(callback){
+        _selectionListener = callback;
+    }
+
     //select object by id
     this.selectById = function(id){
         var floor = _this.getCurFloor();
@@ -860,9 +866,15 @@ var IndoorMap = function (params) {
                     _selected = intersects[ i ].object;
                     if(_selected.type && _selected.type == "solidroom") {
                         _this.select(_selected);
+                        if(_selectionListener) {
+                            _selectionListener(_selected.id); //notify the listener
+                        }
                         break;
                     }else{
                         _selected = null;
+                    }
+                    if(_selected == null && _selectionListener != null){
+                        _selectionListener(-1);
                     }
                 }
             }
@@ -874,7 +886,9 @@ var IndoorMap = function (params) {
             }
 
             _selected = null;
-
+            if(_selectionListener) {
+                _selectionListener(-1); //notify the listener
+            }
         }
     }
 

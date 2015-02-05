@@ -133,11 +133,17 @@ returns a `<ul>` tag with all the floor id. The user can switch the floor by cli
 You can insert the `<ul>` to anywhere in the html.
 Make sure to call this method only after the map is loaded.
 
+**.setSelectionListener(callback)**
+
+set the call back function when a shop is selected.
+
+the shop id is passed as the parameter of callback. and -1 for nothing is selected.
+
 **.getSelectedId()**
 
 get the selected shop's id
 
-**.selectById()**
+**.selectById(id)**
 
 select the shop by its id
 
