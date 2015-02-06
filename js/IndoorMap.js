@@ -577,7 +577,13 @@ var IndoorMap = function (params) {
         var loader = new IndoorMapLoader(_this.is3d);
         _this.mall = loader.parse(json);
         _scene.add(_this.mall.root);
-        _scene.mall = mall;
+        _scene.mall = _this.mall;
+        _renderer.setClearColor(_this.mall.theme.background);
+        if(_curFloorId == 0){
+            _this.showAllFloors();
+        }else{
+            _this.showFloor(_curFloorId);
+        }
     }
 
     //reset the camera to default configuration
