@@ -575,7 +575,9 @@ var IndoorMap = function (params) {
     //parse the json file
     this.parse = function(json){
         var loader = new IndoorMapLoader(_this.is3d);
-        loader.parse(json);
+        _this.mall = loader.parse(json);
+        _scene.add(_this.mall.root);
+        _scene.mall = mall;
     }
 
     //reset the camera to default configuration
