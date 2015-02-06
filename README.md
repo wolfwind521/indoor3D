@@ -114,6 +114,22 @@ if the file is already loaded by other modules, you should use the `.parse(jsonD
 parse the json Data.
 if the jsonData is loaded by other modules, you can just use this function to pass it to the indoor map
 
+**.setDefaultView()**
+
+reset the camera to default view (Default perspective view for a 3d map and default top view for a 2d map)
+
+**.setTopView()**
+
+set the camera to the top view. this function is only valid in the 3d map.
+
+**.zoomIn(zoomScale)**
+
+zoom in. zoom Scale is not necessary. so you can just call .zoomIn()
+
+**.zoomOut(zoomScale)**
+
+zoom out. Same as the zoomIn() function, zoom Scale is not necessary.
+
 **.adjustCamera**
 
 Resets the camera to its default settings. This function is called when switching floors

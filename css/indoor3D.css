@@ -27,7 +27,8 @@
     padding: 0;
 }
 
-.floorsUI li{
+.floorsUI li, .testButton{
+    max-width: 100px;
     padding: 10px;
     background-color: #e8e8e8 ;
     border: 1px solid #bbbbbb;

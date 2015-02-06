@@ -541,7 +541,7 @@ var IndoorMap = function (params) {
         light.position.set(500, 500, 500);
         _scene.add(light);
 
-        _this.resetCamera();
+        _this.setDefaultView();
         _renderer.setSize(_mapDiv.clientWidth, _mapDiv.clientHeight);
         _canvasDiv = _renderer.domElement
         _mapDiv.appendChild(_canvasDiv);
@@ -579,7 +579,7 @@ var IndoorMap = function (params) {
     }
 
     //reset the camera to default configuration
-    this.resetCamera = function () {
+    this.setDefaultView = function () {
         if(_this.is3d) {
             _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
         }else{
@@ -589,10 +589,22 @@ var IndoorMap = function (params) {
         _controls.reset();
     }
 
+    this.setTopView = function(){
+        _this.camera.position.set(0, 500, 0);
+    }
+
     //TODO:adjust camera to fit the building
     this.adjustCamera = function() {
-        _this.resetCamera();
+        _this.setDefaultView();
         _controls.viewChanged = true;
+    }
+
+    this.zoomIn = function(zoomScale){
+        _controls.zoomOut(zoomScale);
+    }
+
+    this.zoomOut = function(zoomScale){
+        _controls.zoomIn(zoomScale);
     }
 
     //resize the map
@@ -621,7 +633,11 @@ var IndoorMap = function (params) {
 
     //show the labels
     this.showLabels = function(showLabels) {
-        _showLabels = showLabels;
+        if(showLabels == undefined){
+            _showLabels = true;
+        }else {
+            _showLabels = showLabels;
+        }
 
         if(_this.mall == null){ //if the mall hasn't been loaded
             return;
@@ -631,6 +647,7 @@ var IndoorMap = function (params) {
                 if(fid != 0) {
                     createLabels(fid);
                     _labelsRoot.style.display = "inline";
+                    updateLabels();
                 }
             } else {
                 if(_labelsRoot != null) {

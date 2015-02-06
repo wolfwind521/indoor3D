@@ -22,7 +22,7 @@
     animate();
 
     var params = {
-        mapDiv:"indoor3d",
+        mapDiv:"indoor3d"
     }
     var indoorMap = new IndoorMap(params);
     indoorMap.load('data/B000A9R4FE.json', function(){
@@ -39,6 +39,10 @@
     }
 
 </script>
-</body>
+<div class = "testButton" onclick="indoorMap.setTopView()">顶视图</div>
+<div class = "testButton" onclick="indoorMap.setDefaultView()">默认透视图</div>
+<div class = "testButton" onclick="indoorMap.zoomIn(0.8)">放大</div>
+<div class = "testButton" onclick="indoorMap.zoomOut(0.8)">缩小</div>
 
+</body>
 </html>
