@@ -17,8 +17,9 @@ GeomUtility.getBoundingRect = function(points){
     if(points.length < 2){
         return rect;
     }
+    var minX = 9999999, minY = 9999999, maxX = -9999999, maxY = -9999999;
     for(var i = 0; i < points.length - 1; i += 2){
-        var minX = 9999999, minY = 9999999, maxX = -9999999, maxY = -9999999;
+
         if(points[i] > maxX){
             maxX = points[i];
         }
@@ -439,6 +440,9 @@ function ParseModel(json, is3d){
                     wire.position.set(0, 0, floorHeight);
 
                     floorObj.add(wire);
+                }else{
+                    funcArea.fillColor = mall.theme.room(funcArea.Type).color;
+
                 }
             }
 

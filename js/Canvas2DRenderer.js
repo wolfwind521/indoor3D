@@ -16,56 +16,76 @@ Canvas2DRenderer = function (param) {
         _oldId = 0,
 
         _clearColor,
-    _cxt = _canvas.getContext('2d'),
+    _ctx = _canvas.getContext('2d'),
     _clearColor,
     _scale;
 
     this.domElement = _canvas;
     this.setDefaultView = function(object){
         if(object._id != _oldId) {
-            var width = object.br[0] - object.tl[0];
-            var height = object.br[1] - object.tl[1];
+            var width = object.rect.br[0] - object.rect.tl[0];
+            var height = object.rect.br[1] - object.rect.tl[1];
             var scaleX = _canvasWidth / width;
             var scaleY = _canvasHeight / height;
             _scale = scaleX < scaleY ? scaleX : scaleY;
-            _centerX = (object.br[0] + object.tl[0])/2;
-            _centerY = (object.br[1] + object.tl[1])/2;
+            _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
+            _centerY = (object.rect.br[1] + object.rect.tl[1])/2;
         }
     }
-    this.draw = function (scene, camera){
+    this.render = function (scene, camera){
         if(scene.mall === undefined) {
             return;
         }
 
         //get render data
         var curFloor = scene.mall.getCurFloor();
-        _ctx.save();
-        _ctx.setTransform(_scale, _scale, 0, 0, _centerX*_scale+_canvasWidthHalf, _centerY*_scale+_canvasHeightHalf);
+
+
+        _ctx.clearRect(0,0,_canvasWidth, _canvasHeight);
+        _ctx.translate(_centerX, _centerY);
+        _ctx.scale(_scale, _scale);
+        _ctx.translate(-_canvasWidthHalf+_centerX*_scale, -_canvasHeightHalf+_centerY*_scale);
+
+
+        var poly = curFloor.Outline[0][0];
+        _ctx.beginPath();
+        _ctx.moveTo(poly[0], poly[1]);
+        for(var i = 2; i < poly.length - 1; i+=2){
+            _ctx.lineTo(poly[i],poly[i+1]);
+        }
+        _ctx.closePath();
+        _ctx.strokeStyle = "blue";
+        _ctx.lineWidth = 1;
+        _ctx.stroke();
+
 
         for(var i = 0 ; i < curFloor.FuncAreas.length; i++){
             var poly = curFloor.FuncAreas[i].Outline[0][0];
             if(poly.length < 6){ //less than 3 points, return
                 return;
             }
-            _cxt.beginPath();
+            _ctx.beginPath();
 
-            _cxt.moveTo(poly[0], poly[1]);
-            for(var i = 2; i < poly.length - 1; i++){
-                _cxt.lineTo(poly[i],poly[i+1]);
+            _ctx.moveTo(poly[0], poly[1]);
+            for(var j = 2; j < poly.length - 1; j+=2){
+                _ctx.lineTo(poly[j],poly[j+1]);
             }
-            _cxt.closePath();
+            _ctx.closePath();
+            _ctx.strokeStyle = "blue";
+            _ctx.lineWidth = 1;
+            _ctx.stroke();
 
 
-            _cxt.strokeStyle = "blue";
-            _cxt.lineWidth = 1;
-            _cxt.stroke();
-            _cxt.fillStyle = "red";
-            _cxt.fill();
+            _ctx.fillStyle = curFloor.FuncAreas[i].fillColor;
+            _ctx.fill();
         }
+
+
     }
 
     this.setClearColor = function(color){
         _clearColor = color;
+
     }
 
     this.setSize = function(width, height) {
