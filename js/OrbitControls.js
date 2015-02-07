@@ -65,13 +65,14 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     var lastPosition = new THREE.Vector3();
 
-    var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
+    var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
     var state = STATE.NONE;
 
     // events
 
     var changeEvent = { type: 'change' };
-
+    var startEvent = { type: 'start'};
+    var endEvent = { type: 'end'};
 
     this.reset = function (){
         rotateStart = new THREE.Vector2();
@@ -431,10 +432,116 @@ THREE.OrbitControls = function ( object, domElement ) {
 
     }
 
+    function touchstart( event ) {
+
+        if ( scope.enabled === false ) return;
+
+        switch ( event.touches.length ) {
+
+            case 2:
+                if(scope.is3d) { //rotate when using webgl
+                    state = STATE.TOUCH_ROTATE;
+                    rotateStart.copy(event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+                    rotateEnd.copy(rotateStart);
+                }else{
+                    state = STATE.NONE;
+                }
+                break;
+            case 1:
+                state = STATE.TOUCH_ZOOM_PAN;
+//                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+//                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+//                _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
+
+//                var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
+//                var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
+                panStart.set( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+                //panEnd.copy( panStart );
+                break;
+
+            default:
+                state = STATE.NONE;
+
+        }
+        document.addEventListener( 'touchend', touchend, false );
+        document.addEventListener( 'touchmove', touchmove, false );
+        scope.dispatchEvent( startEvent );
+
+
+    }
+
+    function touchmove( event ) {
+
+        if ( scope.enabled === false ) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        switch ( event.touches.length ) {
+
+            case 2:
+                if(scope.is3d) {
+                    rotateEnd.copy(event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+                }else{
+                    state = STATE.NONE;
+                }
+                break;
+            case 1:
+//                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+//                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+//                _touchZoomDistanceEnd = Math.sqrt( dx * dx + dy * dy );
+//
+//                var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
+//                var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
+                panEnd.set( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+                panDelta.subVectors(panEnd, panStart);
+                scope.pan(new THREE.Vector3( - panDelta.x, panDelta.y , 0 ));
+                panStart.copy(panEnd);
+                break;
+
+            default:
+                state = STATE.NONE;
+
+        }
+
+    }
+
+    function touchend( event ) {
+
+        if ( scope.enabled === false ) return;
+
+//        switch ( event.touches.length ) {
+//
+//            case 2:
+//                if(scope.is3d) {
+//                    rotateEnd.copy(event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+//                    rotateStart.copy(rotateEnd);
+//                }
+//                break;
+//            case 1:
+////                _touchZoomDistanceStart = _touchZoomDistanceEnd = 0;
+////
+////                var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
+////                var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
+////                panEnd.copy( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
+////                panStart.copy( panEnd );
+//                break;
+//
+//        }
+        document.removeEventListener('touchend', touchend, false);
+        document.removeEventListener('touchmove', touchmove, false);
+
+        state = STATE.NONE;
+        scope.dispatchEvent( endEvent );
+
+    }
+
     this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
     this.domElement.addEventListener( 'mousedown', onMouseDown, false );
     this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
     this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+    this.domElement.addEventListener( 'touchstart', touchstart, false );
+
     window.addEventListener( 'keydown', onKeyDown, false );
     window.addEventListener( 'keyup', onKeyUp, false );
 

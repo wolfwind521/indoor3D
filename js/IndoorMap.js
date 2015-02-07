@@ -654,9 +654,11 @@ var IndoorMap = function (params) {
         if(selectable){
             _projector = new THREE.Projector();
             _rayCaster = new THREE.Raycaster();
-            document.addEventListener('mousedown', onSelectObject, false);
+            _mapDiv.addEventListener('mousedown', onSelectObject, false);
+            _mapDiv.addEventListener('touchstart', onSelectObject, false);
         }else{
-            document.removeEventListener('mousedown', onSelectObject, false);
+            _mapDiv.removeEventListener('mousedown', onSelectObject, false);
+            _mapDiv.removeEventListener('touchstart', onSelectObject, false);
         }
     }
 
@@ -891,11 +893,17 @@ var IndoorMap = function (params) {
     }
 
     function onSelectObject() {
+
         // find intersections
         event.preventDefault();
         var mouse = new THREE.Vector2();
-        mouse.x = ( event.clientX / _canvasDiv.clientWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / _canvasDiv.clientHeight ) * 2 + 1;
+        if(event.type == "touchstart"){
+            mouse.x = ( event.touches[0].clientX / _canvasDiv.clientWidth ) * 2 - 1;
+            mouse.y = -( event.touches[0].clientY / _canvasDiv.clientHeight ) * 2 + 1;
+        }else {
+            mouse.x = ( event.clientX / _canvasDiv.clientWidth ) * 2 - 1;
+            mouse.y = -( event.clientY / _canvasDiv.clientHeight ) * 2 + 1;
+        }
         var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
         _projector.unprojectVector( vector, _this.camera );
 

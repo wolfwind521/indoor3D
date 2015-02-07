@@ -9,6 +9,7 @@
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/IndoorMap.js"></script>
+<script src="js/Projector.js"></script>
 <script src="js/stats.min.js"></script>
 <script src="js/Canvas2DRenderer.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
@@ -32,7 +33,7 @@
     loader.load('data/爱琴海购物中心.json', function(mall){
         testjson = mall.jsonData;
         indoorMap.parse(testjson);
-        //indoorMap.setSelectable(true);
+        indoorMap.setSelectable(true);
     });
 
 ///---------------load function test--------------------
