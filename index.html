@@ -23,16 +23,27 @@
 
     var params = {
         mapDiv:"indoor3d"
+        //,dim:"2d"
     }
     var indoorMap = new IndoorMap(params);
-    indoorMap.load('data/B000A9R4FE.json', function(){
-        indoorMap.showFloor(1);
-        indoorMap.draw();
-        //indoorMap.showLabels(true);
+
+    var testjson;
+    var loader = new IndoorMapLoader(indoorMap.is3d);
+    loader.load('data/赛特购物中心.json', function(mall){
+        testjson = mall.jsonData;
+        indoorMap.parse(testjson);
         indoorMap.setSelectable(true);
-        //var ul = indoorMap.getUI();
-        //document.body.appendChild(ul);
-    });
+    })
+
+///---------------load function test--------------------
+//    indoorMap.load('data/赛特购物中心.json', function(){
+//        indoorMap.showFloor(1);
+//        indoorMap.showLabels(true);
+//        indoorMap.setSelectable(true);
+//        var ul = indoorMap.getUI();
+//        document.body.appendChild(ul);
+//    });
+
     function animate(){
         requestAnimationFrame(animate);
         stats.update();

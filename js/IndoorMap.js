@@ -2,18 +2,57 @@
  * Created by gaimeng on 14/12/27.
  */
 
+//---------------------the GeomUtility class--------------------
+function GeomUtility(){}
+
+//get the bounding Rect of the points
+function Rect(){
+    this.tl = [0,0]; //top left point
+    this.br = [0,0]; //bottom right point
+}
+
+GeomUtility.getBoundingRect = function(points){
+    var rect = new Rect();
+    //if there are less than 1 point
+    if(points.length < 2){
+        return rect;
+    }
+    for(var i = 0; i < points.length - 1; i += 2){
+        var minX = 9999999, minY = 9999999, maxX = -9999999, maxY = -9999999;
+        if(points[i] > maxX){
+            maxX = points[i];
+        }
+        if(points[i] < minX){
+            minX = points[i];
+        }
+        if(points[i+1] > maxY){
+            maxY = points[i+1];
+        }
+        if(points[i+1] < minY){
+            minY = points[i+1];
+        }
+    }
+    rect.tl = [minX, minY];
+    rect.br = [maxX, maxY];
+    return rect;
+}
 
 //---------------------the Mall class--------------------
 function Mall(){
     var _this = this;
     this.floors = [];   //the floors
     this.building = null; //the building
-    this.root = new THREE.Object3D(); //the root scene
+    this.root = null; //the root scene
     this.theme = defaultTheme; //theme
     this.is3d = true;
+    this.jsonData = null;
 
     var _curFloorId;
 
+    //get default floor id
+    this.getDefaultFloorId = function(){
+        return _this.jsonData.data.building.DefaultFloor;
+    }
     //get current floor id
     this.getCurFloorId = function() {
         return _curFloorId;
@@ -86,11 +125,11 @@ function Mall(){
 //----------------------------theme--------------------------------------
 var defaultTheme = {
     name : "test", //theme's name
-    background : 0xe6e6e6, //background color
+    background : "#e6e6e6", //background color
 
     //building's style
     building : {
-        color: 0x000000,
+        color: "#000000",
         opacity: 0.1,
         transparent:true,
         depthTest:false
@@ -98,7 +137,7 @@ var defaultTheme = {
 
     //floor's style
     floor : {
-        color: 0xc1c1c1,
+        color: "#c1c1c1",
         opacity:1,
         transparent:false
     },
@@ -110,82 +149,82 @@ var defaultTheme = {
     room : function(type){
         switch (type){
 
-            case "000100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
+            case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
                 return {
-                    color: 0x212121,
+                    color: "#212121",
                     opacity: 0.8,
                     transparent: true
                 }
-            case "000300": //closed area
+            case "300": //closed area
                 return {
-                    color: 0x9e9e9e,
+                    color: "#9e9e9e",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "000400": //empty shop
+            case "400": //empty shop
                 return{
-                    color: 0xE4E4E4,
+                    color: "#E4E4E4",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "050100": //chinese food
+            case "50100": //chinese food
                 return {
-                    color: 0xd8992c,
+                    color: "#d8992c",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "050117": //hotpot
+            case "50117": //hotpot
                 return {
-                    color: 0xe6a1d1,
+                    color: "#e6a1d1",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "050201": //i don't know. some kinds of food...
+            case "50201": //i don't know. some kinds of food...
                 return {
-                    color: 0xb9b3ff,
+                    color: "#b9b3ff",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "050300": //western food
+            case "50300": //western food
                 return {
-                    color: 0xa1e5e6,
+                    color: "#a1e5e6",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "050300": //western food
+            case "50300": //western food
                 return {
-                    color: 0x9e9323,
+                    color: "#9e9323",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "061102": //shoes
+            case "61102": //shoes
                 return {
-                    color: 0x99455e,
+                    color: "#99455e",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "061103": //bags
+            case "61103": //bags
                 return {
-                    color: 0x17566a,
+                    color: "#17566a",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "061202": //jewelry
+            case "61202": //jewelry
                 return {
-                    color: 0xd6675b,
+                    color: "#d6675b",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "061400": //toiletry
+            case "61400": //toiletry
                 return {
-                    color: 0x17566a,
+                    color: "#17566a",
                     opacity: 0.7,
                     transparent: true
                 };
 
             default : //default
                 return {
-                    color: 0xd0641a,
+                    color: "#d0641a",
                     opacity: 0.7,
                     transparent: true
                 };
@@ -193,8 +232,8 @@ var defaultTheme = {
     },
 
     //room wires' style
-    roomWire : {
-        color: 0x38291f,
+    strokeStyle : {
+        color: "#38291f",
         opacity: 0.5,
         transparent: true,
         linewidth: 1
@@ -239,12 +278,10 @@ var defaultTheme = {
 }
 //----------------------------the Loader class --------------------------
 IndoorMapLoader= function ( is3d ) {
-
     THREE.Loader.call( this, is3d );
 
     this.withCredentials = false;
     this.is3d = is3d;
-
 };
 
 IndoorMapLoader.prototype = Object.create( THREE.Loader.prototype );
@@ -328,122 +365,115 @@ IndoorMapLoader.prototype.loadAjaxJSON = function ( context, url, callback, call
 };
 
 IndoorMapLoader.prototype.parse = function ( json ) {
+    return ParseModel(json, this.is3d);
+};
 
-    var scope = this,
-        mall = new Mall();
+//-----------------------------the Parser class ---------------------------------------
+function ParseModel(json, is3d){
 
-    //get the center of some points
-    function getCenter(points){
-        var center = new THREE.Vector2(0,0);
-        for(var i=0; i<points.length; i++){
-            center.add(points[i]);
-        }
-        center.divideScalar(points.length);
-        return center;
-    }
+    var mall = new Mall();
 
-    function parse3DModels() {
-        var building,shape, extrudeSettings, geometry, material, mesh, wire, color, points;
+    function parse() {
+
+        mall.jsonData = json;
+        mall.is3d = is3d;
+
+        var building,shape, extrudeSettings, geometry, material, mesh, wire, points;
         var scale = 0.1, floorHeight, buildingHeight = 0;
-        var underfloors = json.data.building.UnderFloors;
 
         //floor geometry
         for(var i=0; i<json.data.Floors.length; i++){
-            var floorObj = new THREE.Object3D();
             var floor = json.data.Floors[i];
-            var floorid = floor._id;
-            floorHeight = floor.High / scale;
-            if(floorHeight == 0.0){ //if it's 0, set to 50.0
-                floorHeight = 50.0;
-            }
-            buildingHeight += floorHeight;
-            points = parsePoints(floor.Outline[0][0]);
-            shape = new THREE.Shape(points);
-            geometry = new THREE.ShapeGeometry(shape);
-            mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial(mall.theme.floor));
-            mesh.position.set(0,0,-5);
+            floor.rect = GeomUtility.getBoundingRect(floor.Outline[0][0]);
 
-            floorObj.height = floorHeight;
-            floorObj.add(mesh);
-            floorObj.points = [];
-            floorObj._id = floor._id;
-            var index;
-            if(floorid < 0) { //underfloors
-                index = floorid + underfloors;
-            }else{ // ground floors, id starts from 1
-                index = floorid - 1 + underfloors;
+            if(is3d) { // for 3d model
+                var floorObj = new THREE.Object3D();
+
+                floorHeight = floor.High / scale;
+                if (floorHeight == 0.0) { //if it's 0, set to 50.0
+                    floorHeight = 50.0;
+                }
+                buildingHeight += floorHeight;
+                points = parsePoints(floor.Outline[0][0]);
+                shape = new THREE.Shape(points);
+                geometry = new THREE.ShapeGeometry(shape);
+                mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial(mall.theme.floor));
+                mesh.position.set(0, 0, -5);
+
+                floorObj.height = floorHeight;
+                floorObj.add(mesh);
+                floorObj.points = [];
+                floorObj._id = floor._id;
+
+                mall.floors.push(floorObj);
+            }else{//for 2d model
+                mall.floors.push(floor);
             }
-            mall.floors[index] = floorObj;
+
             //funcArea geometry
             for(var j=0; j<floor.FuncAreas.length; j++){
 
                 var funcArea = floor.FuncAreas[j];
-                points = parsePoints(funcArea.Outline[0][0]);
-                shape = new THREE.Shape(points);
+                funcArea.rect = GeomUtility.getBoundingRect(funcArea.Outline[0][0]);
 
-                var center = getCenter(points);
-                floorObj.points.push({ name: funcArea.Name, type: funcArea.Type, position: new THREE.Vector3(center.x * scale, floorHeight * scale, -center.y * scale )});
+                if(is3d) {
+                    points = parsePoints(funcArea.Outline[0][0]);
+                    shape = new THREE.Shape(points);
 
-                //solid model
-                if(scope.is3d) {
+                    var center = funcArea.Center;
+                    floorObj.points.push({ name: funcArea.Name, type: funcArea.Type, position: new THREE.Vector3(center[0] * scale, floorHeight * scale, -center[1] * scale)});
+
+                    //solid model
                     extrudeSettings = {amount: floorHeight, bevelEnabled: false};
                     geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
                     material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type));
-                }else{
-                    geometry = new THREE.ShapeGeometry(shape);
-                    material = new THREE.MeshBasicMaterial(mall.theme.room(funcArea.Type));
-                }
-                mesh = new THREE.Mesh(geometry, material);
-                mesh.type = "solidroom";
-                mesh.name = funcArea.Name;
-                mesh.id = funcArea._id;
-                floorObj.add(mesh);
+                    mesh = new THREE.Mesh(geometry, material);
+                    mesh.type = "solidroom";
+                    mesh.id = funcArea._id;
 
-                geometry = shape.createPointsGeometry();
-//                //bottom wireframe
-//                wire = new THREE.Line(geometry, mall.theme.roomWireMat);
-//                floorObj.add(wire);
+                    floorObj.add(mesh);
 
-                //top wireframe
-                wire = new THREE.Line(geometry, new THREE.LineBasicMaterial(mall.theme.roomWire));
-                if(scope.is3d) {
+                    //top wireframe
+                    geometry = shape.createPointsGeometry();
+                    wire = new THREE.Line(geometry, new THREE.LineBasicMaterial(mall.theme.strokeStyle));
                     wire.position.set(0, 0, floorHeight);
+
+                    floorObj.add(wire);
                 }
-                floorObj.add(wire);
-
-
             }
 
-            //pubPoint geometry
-            for(var j = 0; j < floor.PubPoint.length; j++){
-                var pubPoint = floor.PubPoint[j];
-                var point = parsePoints(pubPoint.Outline[0][0])[0];
-                floorObj.points.push({name: pubPoint.Name, type: pubPoint.Type, position: new THREE.Vector3(point.x * scale,  floorHeight * scale, -point.y * scale)});
+            if(is3d) {
+                //pubPoint geometry
+                for (var j = 0; j < floor.PubPoint.length; j++) {
+                    var pubPoint = floor.PubPoint[j];
+                    var point = parsePoints(pubPoint.Outline[0][0])[0];
+                    floorObj.points.push({name: pubPoint.Name, type: pubPoint.Type, position: new THREE.Vector3(point.x * scale, floorHeight * scale, -point.y * scale)});
+                }
             }
         }
 
-        //building geometry
-        building = json.data.building;
-        points = parsePoints(building.Outline[0][0]);
+        if(is3d) {
+            mall.root = new THREE.Object3D(); //if is 3d, create a root object3D
 
-        if(points.length > 0) {
+            //building geometry
+            building = json.data.building;
+            points = parsePoints(building.Outline[0][0]);
+
+            if (points.length > 0) {
                 shape = new THREE.Shape(points);
                 extrudeSettings = {amount: buildingHeight, bevelEnabled: false};
                 geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
                 mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial(mall.theme.building));
 
                 mall.building = mesh;
-        }
-        mall.root.name = building.Name;
-        mall.remark = building.Remark;
+            }
 
-        //scale the mall
-        mall.root.scale.set(scale, scale, scale);
-        mall.root.rotateOnAxis(new THREE.Vector3(1, 0, 0 ), -Math.PI/2);
+            //scale the mall
+            mall.root.scale.set(scale, scale, scale);
+            mall.root.rotateOnAxis(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+        }
 
         return mall;
-
-
     };
 
     //parse the points to THREE.Vector2 (remove duplicated points)
@@ -463,19 +493,8 @@ IndoorMapLoader.prototype.parse = function ( json ) {
         return shapePoints;
     }
 
-    mall.is3d = scope.is3d;
-    if(scope.is3d){//3d map
-        return parse3DModels();
-    }else{//2d map
-        mall.jsonData = json;
-        for(var i = 0; i < json.data.Floors.length; i++){
-            mall.floors.push(json.data.Floors[i]);
-            mall.building = json.data.building;
-        }
-        return mall;
-    }
-};
-
+    return parse();
+}
 //-----------------------------the IndoorMap class ------------------------------------
 
 var IndoorMap = function (params) {
@@ -530,8 +549,8 @@ var IndoorMap = function (params) {
             _scene.add(light);
 
         } else {
-            //_renderer = new Canvas2DRenderer();
-            _renderer = new THREE.CanvasRenderer();
+            _renderer = new Canvas2DRenderer();
+            //_renderer = new THREE.CanvasRenderer();
             _controls.is3d = false;
             _this.is3d = false;
         }
@@ -541,7 +560,6 @@ var IndoorMap = function (params) {
         light.position.set(500, 500, 500);
         _scene.add(light);
 
-        _this.setDefaultView();
         _renderer.setSize(_mapDiv.clientWidth, _mapDiv.clientHeight);
         _canvasDiv = _renderer.domElement
         _mapDiv.appendChild(_canvasDiv);
@@ -574,15 +592,12 @@ var IndoorMap = function (params) {
 
     //parse the json file
     this.parse = function(json){
-        var loader = new IndoorMapLoader(_this.is3d);
-        _this.mall = loader.parse(json);
-        _scene.add(_this.mall.root);
+        _this.mall = ParseModel(json, _this.is3d);
         _scene.mall = _this.mall;
+        _this.showFloor(_this.mall.getDefaultFloorId());
         _renderer.setClearColor(_this.mall.theme.background);
-        if(_curFloorId == 0){
-            _this.showAllFloors();
-        }else{
-            _this.showFloor(_curFloorId);
+        if(_this.is3d) {
+            _scene.add(_this.mall.root);
         }
     }
 
@@ -590,11 +605,13 @@ var IndoorMap = function (params) {
     this.setDefaultView = function () {
         if(_this.is3d) {
             _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
+            _this.camera.lookAt(_scene.position);
         }else{
-            _this.camera.position.set(0, 500, 0);
+            _renderer.setDefaultView(_this.mall.getCurFloor());
         }
-        _this.camera.lookAt(_scene.position);
+
         _controls.reset();
+        _controls.viewChanged = true;
     }
 
     this.setTopView = function(){
@@ -604,7 +621,7 @@ var IndoorMap = function (params) {
     //TODO:adjust camera to fit the building
     this.adjustCamera = function() {
         _this.setDefaultView();
-        _controls.viewChanged = true;
+
     }
 
     this.zoomIn = function(zoomScale){
@@ -684,10 +701,10 @@ var IndoorMap = function (params) {
             _this.showAllFloors();
         }
 
-        for(var i = 0; i < this.mall.floorNames.length; i++){
+        for(var i = 0; i < this.mall.jsonData.data.Floors.length; i++){
             (function(arg){
                 li = document.createElement('li');
-                text = document.createTextNode(_this.mall.floorNames[i]);
+                text = document.createTextNode(_this.mall.jsonData.data.Floors[i].Name);
                 li.appendChild(text);
                 li.onclick = function () {
                     _this.showFloor(_this.mall.floors[arg]._id);
@@ -742,7 +759,6 @@ var IndoorMap = function (params) {
         _this.adjustCamera();
         _this.showLabels(_showLabels);
         updateUI();
-        _controls.viewChanged = true;
     }
 
     //show all floors
@@ -857,13 +873,16 @@ var IndoorMap = function (params) {
     function animate () {
         requestAnimationFrame(animate);
         _controls.update();
-        _renderer.render(_scene, _this.camera);
+        if(_controls.viewChanged) {
+            _renderer.render(_scene, _this.camera);
+        }
         if(_showLabels){
             updateLabels();
         }
+        _controls.viewChanged = false;
     }
 
-    this.draw = function(){
+    function redraw(){
         _renderer.render(_scene, _this.camera);
     }
 
@@ -915,6 +934,8 @@ var IndoorMap = function (params) {
                 _selectionListener(-1); //notify the listener
             }
         }
+        redraw();
+
     }
 
     function onWindowResize(){
