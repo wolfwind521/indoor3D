@@ -30,11 +30,13 @@
 ///--------------parse function test-------------------
     var testjson;
     var loader = new IndoorMapLoader(indoorMap.is3d);
-    loader.load('data/爱琴海购物中心.json', function(mall){
+    loader.load('data/赛特购物中心.json', function(mall){
         testjson = mall.jsonData;
         indoorMap.parse(testjson);
         indoorMap.setSelectable(true);
         indoorMap.showPubPoints();
+        var ul = indoorMap.getUI();
+        document.body.appendChild(ul);
     });
 
 ///---------------load function test--------------------

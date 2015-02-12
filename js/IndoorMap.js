@@ -278,15 +278,18 @@ var defaultTheme = {
         linewidth: 1
     },
 
-    labelImg: {
+    pubPointImg: {
 
         "11001": "./img/toilet.png",
         "11002": "./img/ATM.png",
-        "21001": "./img/stair.png"
+        "21001": "./img/stair.png",
+        "22006": "./img/entry.png",
+        "21002": "./img/escalator.png",
+        "21003": "./img/lift.png"
     }
 
     ////icons of the labels
-    //labelImg: function(type){
+    //pubPointImg: function(type){
     //    switch (type){
     //        case "000300": //closed area
     //            return "./img/indoor_floor_normal.png";
@@ -555,9 +558,10 @@ var IndoorMap = function (params) {
     var _curFloorId = 0;
     var _fullScreen = false;
     var _selectionListener = null;
+    var _sceneOrtho, _cameraOrtho;//for 2d
+    var _canvasWidth, _canvasHeight, _canvasWidthHalf, _canvasHeightHalf;
     this.is3d = true;
-    var _canvasSprites = [];
-    var _ctx;
+    var _spriteMaterials = [], _pubPointSprites=null;
 
     //initialization
     this.init = function (params) {
@@ -586,15 +590,24 @@ var IndoorMap = function (params) {
             window.addEventListener('resize', onWindowResize, false);
         }
 
+        _canvasWidth = _mapDiv.clientWidth;
+        _canvasWidthHalf = _canvasWidth / 2;
+        _canvasHeight = _mapDiv.clientHeight;
+        _canvasHeightHalf = _canvasHeight / 2;
+
         // set up the scene
         _scene = new THREE.Scene();
-        _this.camera = new THREE.PerspectiveCamera(20, _mapDiv.clientWidth / _mapDiv.clientHeight, 0.1, 2000);
-        _controls = new THREE.OrbitControls(_this.camera);
+        _this.camera = new THREE.PerspectiveCamera(20, _canvasWidth / _canvasHeight, 0.1, 2000);
 
+        _sceneOrtho = new THREE.Scene();
+        _cameraOrtho = new THREE.OrthographicCamera(- _canvasWidthHalf, _canvasWidthHalf, _canvasHeightHalf, -_canvasHeightHalf, 1, 10);
+        _cameraOrtho.position.z = 10;
+        _controls = new THREE.OrbitControls(_this.camera);
 
         // webgl detection
         if (Detector.webgl && _this.is3d) {
             _renderer = new THREE.WebGLRenderer({ antialias: true });
+            _renderer.autoClear = false;
             var light = new THREE.DirectionalLight(0xffffff);
             light.position.set(-500, 500, -500);
             _scene.add(light);
@@ -605,7 +618,6 @@ var IndoorMap = function (params) {
             _controls.is3d = false;
             _this.is3d = false;
         }
-        _ctx = _renderer.domElement.getContext('2d') ;
 
         //set up the lights
         var light = new THREE.DirectionalLight(0xffffff);
@@ -741,10 +753,9 @@ var IndoorMap = function (params) {
             return;
         }else{//the mall has already been loaded
             if(_showPubPoints){
-                if(_canvasSprites.length == 0){
-                    loadCanvasSprites();
+                if(_spriteMaterials.length == 0){
+                    loadSprites();
                 }
-                updateLabels();
             }
         }
     }
@@ -824,8 +835,10 @@ var IndoorMap = function (params) {
         }
         _this.mall.showFloor(floorid);
         _this.adjustCamera();
+        createPubPointSprites(floorid);
         _this.showLabels(_showLabels);
         updateUI();
+        redraw();
     }
 
     //show all floors
@@ -839,6 +852,7 @@ var IndoorMap = function (params) {
         if(_labelsRoot != null){
             _labelsRoot.innerHTML = ""; //clear the labels when showing all
         }
+        clearPubPointSprites();
         updateUI();
     }
 
@@ -859,7 +873,7 @@ var IndoorMap = function (params) {
         var floorPoints = _this.mall.getFloor(floorId).points;
         for(var i=0 ; i < floorPoints.length; i++) {
             var div = document.createElement('div');
-            var imgsrc = _this.mall.theme.labelImg(floorPoints[i].type);
+            var imgsrc = _this.mall.theme.pubPointImg(floorPoints[i].type);
             if(imgsrc != null && imgsrc != "") {
                 var img = document.createElement('img');
                 img.setAttribute('src', imgsrc);
@@ -878,10 +892,7 @@ var IndoorMap = function (params) {
 
     }
 
-    function computeProjectMatrix(){
-
-    }
-
+    //labels includes pubPoints and shop names
     function updateLabels() {
         var mall = _this.mall;
         if(mall == null || _controls == null || !_controls.viewChanged){
@@ -900,8 +911,6 @@ var IndoorMap = function (params) {
             }
             var floorPoints = mall.getCurFloor().points;
 
-            halfWidth = _canvasDiv.clientWidth / 2;
-            halfHeight = _canvasDiv.clientHeight / 2;
             projectMatrix = new THREE.Matrix4();
             projectMatrix.multiplyMatrices(_this.camera.projectionMatrix, _this.camera.matrixWorldInverse);
 
@@ -909,14 +918,14 @@ var IndoorMap = function (params) {
                 var vec = new THREE.Vector3(floorPoints[i].position.x, floorPoints[i].position.y, floorPoints[i].position.z);
                 vec.applyProjection(projectMatrix);
                 var pos = {
-                    x: Math.round(vec.x * halfWidth + halfWidth),
-                    y: Math.round(-vec.y * halfHeight + halfHeight)
+                    x: Math.round(vec.x * _canvasWidthHalf + _canvasWidthHalf),
+                    y: Math.round(-vec.y * _canvasHeightHalf + _canvasHeightHalf)
                 };
                 _labelsRoot.children[i].style.left = pos.x + 'px';
                 _labelsRoot.children[i].style.top = pos.y + 'px';
                 _labelsRoot.children[i].style.position = 'absolute';
 
-                if (pos.x < 0 || pos.x > _canvasDiv.clientWidth || pos.y < 0 || pos.y > _canvasDiv.clientHeight) {
+                if (pos.x < 0 || pos.x > _canvasWidth || pos.y < 0 || pos.y > _canvasHeight) {
                     _labelsRoot.children[i].style.display = "none";
                 } else {
                     _labelsRoot.children[i].style.display = "inline";
@@ -926,19 +935,39 @@ var IndoorMap = function (params) {
 
         if(_showPubPoints){
             if(!projectMatrix){
-                halfWidth = _canvasDiv.clientWidth / 2;
-                halfHeight = _canvasDiv.clientHeight / 2;
                 projectMatrix = new THREE.Matrix4();
                 projectMatrix.multiplyMatrices(_this.camera.projectionMatrix, _this.camera.matrixWorldInverse);
             }
             var pubPointsJson = _this.mall.getFloorJson(mall.getCurFloorId()).PubPoint;
-            for(var i = 0; i < pubPointsJson.length; i++){
-                var points = pubPointsJson[i].Outline[0][0];
-                var vec = new THREE.Vector3(points[0]*0.1, points[1]*0.1, 0);
+
+            for(var i = 0 ; i < _pubPointSprites.children.length; i++){
+                var sprite = _pubPointSprites.children[i];
+                var vec = new THREE.Vector3(sprite.oriX * 0.1, 0, -sprite.oriY * 0.1);
                 vec.applyProjection(projectMatrix);
-                var x = Math.round(vec.x * halfWidth + halfWidth);
-                var y = Math.round(-vec.y * halfHeight + halfHeight);
-                _canvasSprites[pubPointsJson[i].Type].draw(x, y);
+
+                var x = Math.round(vec.x * _canvasWidthHalf);
+                var y = Math.round(vec.y * _canvasHeightHalf);
+                sprite.position.set(x, y, 1);
+
+                //check collision with the former sprites
+                var visible = true;
+                var visibleMargin = 5;
+                for(var j = 0; j < i; j++){
+                    var dis = sprite.position.distanceTo( _pubPointSprites.children[j].position ) ;
+
+                    var img = sprite.material.map.image;
+                    if(dis < img.width){
+                        visible = false;
+                        break;
+                    }
+
+                    if(sprite.visible == false && dis < sprite.material.map.image.width + visibleMargin){
+                        visible = false;
+                        break;
+                    }
+                }
+                sprite.visible = visible;
+
             }
         }
         _controls.viewChanged = false;
@@ -974,16 +1003,23 @@ var IndoorMap = function (params) {
         requestAnimationFrame(animate);
         _controls.update();
         if(_controls.viewChanged) {
+
+            _renderer.clear();
             _renderer.render(_scene, _this.camera);
+
+
+            if(_showLabels || _showPubPoints){
+                updateLabels();
+            }
+            _renderer.clearDepth();
+            _renderer.render(_sceneOrtho, _cameraOrtho);
         }
-        if(_showLabels){
-            updateLabels();
-        }
+
         _controls.viewChanged = false;
     }
 
     function redraw(){
-        _renderer.render(_scene, _this.camera);
+        _controls.viewChanged = true;
     }
 
     function onSelectObject() {
@@ -1048,17 +1084,55 @@ var IndoorMap = function (params) {
         _this.resize(window.innerWidth, window.innerHeight);
     }
 
-    function loadCanvasSprites(){
-        if(_this.mall != null && _canvasSprites.length == 0){
-            var images = _this.mall.theme.labelImg;
-            _ctx = _renderer.getContext();
+    //load Sprites
+    function loadSprites(){
+        if(_this.mall != null && _spriteMaterials.length == 0){
+            var images = _this.mall.theme.pubPointImg;
             for(var key in images){
-                var sprite = new CanvasSprite({image:images[key], width: 30, height:30, ctx: _ctx});
-                _canvasSprites[key] = sprite;
+                var texture = THREE.ImageUtils.loadTexture(images[key]);
+                var material = new THREE.SpriteMaterial({map:texture});
+                _spriteMaterials[key] = material;
             }
         }
+        _spriteMaterials.isLoaded = true;
     }
 
+    //create the sprites in a floor by the floor id
+    function createPubPointSprites(floorId){
+        if(!_spriteMaterials.isLoaded){
+            loadSprites();
+        }
+
+        if(!_pubPointSprites) {
+
+            _pubPointSprites = new THREE.Object3D();
+        }else{
+
+            clearPubPointSprites();
+        }
+
+        var pubPointsJson = _this.mall.getFloorJson(_this.mall.getCurFloorId()).PubPoint;
+        var imgWidth, imgHeight;
+        for(var i = 0; i < pubPointsJson.length; i++){
+            var spriteMat = _spriteMaterials[pubPointsJson[i].Type];
+            if(spriteMat !== undefined) {
+                //imgWidth = spriteMat.map.image.width;
+                //imgHeight = spriteMat.map.image.height;
+                imgWidth = 30, imgHeight = 30;
+                var sprite = new THREE.Sprite(spriteMat);
+                sprite.scale.set(imgWidth, imgHeight, 1);
+                sprite.oriX = pubPointsJson[i].Outline[0][0][0];
+                sprite.oriY = pubPointsJson[i].Outline[0][0][1];
+                _pubPointSprites.add(sprite);
+            }
+        }
+        _sceneOrtho.add(_pubPointSprites);
+    }
+
+    function clearPubPointSprites(){
+        _pubPointSprites.remove(_pubPointSprites.children);
+        _pubPointSprites.children.length = 0;
+    }
 
     _this.init(params);
     animate();
