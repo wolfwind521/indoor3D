@@ -2,6 +2,14 @@
  * Created by gaimeng on 14/12/27.
  */
 
+var System={};
+var js=document.scripts;
+js=js[js.length-1].src.substring(0,js[js.length-1].src.lastIndexOf("/"));
+System.path = js;
+System.libPath = System.path.substring(0,System.path.lastIndexOf("/"));
+System.imgPath = System.libPath+"/img";
+
+
 //---------------------the GeomUtility class--------------------
 function GeomUtility(){}
 
@@ -280,12 +288,12 @@ var defaultTheme = {
 
     pubPointImg: {
 
-        "11001": "./img/toilet.png",
-        "11002": "./img/ATM.png",
-        "21001": "./img/stair.png",
-        "22006": "./img/entry.png",
-        "21002": "./img/escalator.png",
-        "21003": "./img/lift.png"
+        "11001": System.imgPath+"/toilet.png",
+        "11002": System.imgPath+"/ATM.png",
+        "21001": System.imgPath+"/stair.png",
+        "22006": System.imgPath+"/entry.png",
+        "21002": System.imgPath+"/escalator.png",
+        "21003": System.imgPath+"/lift.png"
     }
 
     ////icons of the labels
@@ -953,9 +961,14 @@ var IndoorMap = function (params) {
                 var visible = true;
                 var visibleMargin = 5;
                 for(var j = 0; j < i; j++){
+                    var img = sprite.material.map.image;
+                    if(!img){
+                        visible = false;
+                        break;
+                    }
+
                     var dis = sprite.position.distanceTo( _pubPointSprites.children[j].position ) ;
 
-                    var img = sprite.material.map.image;
                     if(dis < img.width){
                         visible = false;
                         break;
@@ -1089,7 +1102,7 @@ var IndoorMap = function (params) {
         if(_this.mall != null && _spriteMaterials.length == 0){
             var images = _this.mall.theme.pubPointImg;
             for(var key in images){
-                var texture = THREE.ImageUtils.loadTexture(images[key]);
+                var texture = THREE.ImageUtils.loadTexture(images[key], undefined, redraw);
                 var material = new THREE.SpriteMaterial({map:texture});
                 _spriteMaterials[key] = material;
             }
