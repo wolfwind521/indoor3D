@@ -38,7 +38,7 @@ THREE.OrbitControls = function ( object, domElement ) {
     // 65 /*A*/, 83 /*S*/, 68 /*D*/
     this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, ROTATE: 65, ZOOM: 83, PAN: 68 };
 
-    this.is3d = true;
+    this.viewChanged = true;
 
     // internals
 
@@ -179,13 +179,6 @@ THREE.OrbitControls = function ( object, domElement ) {
         this.center.add( distance );
 
     };
-
-    this.set3D = function(b){
-        scope.is3d = b;
-        if(b){
-            //TODO
-        }
-    }
 
     this.update = function () {
 
@@ -439,13 +432,11 @@ THREE.OrbitControls = function ( object, domElement ) {
         switch ( event.touches.length ) {
 
             case 2:
-                if(scope.is3d) { //rotate when using webgl
+
                     state = STATE.TOUCH_ROTATE;
                     rotateStart.copy(event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
                     rotateEnd.copy(rotateStart);
-                }else{
-                    state = STATE.NONE;
-                }
+
                 break;
             case 1:
                 state = STATE.TOUCH_ZOOM_PAN;
@@ -480,11 +471,9 @@ THREE.OrbitControls = function ( object, domElement ) {
         switch ( event.touches.length ) {
 
             case 2:
-                if(scope.is3d) {
+
                     rotateEnd.copy(event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
-                }else{
-                    state = STATE.NONE;
-                }
+
                 break;
             case 1:
 //                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;

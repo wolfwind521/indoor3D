@@ -14,9 +14,17 @@ System.imgPath = System.libPath+"/img";
 function GeomUtility(){}
 
 //get the bounding Rect of the points
-function Rect(){
-    this.tl = [0,0]; //top left point
-    this.br = [0,0]; //bottom right point
+function Rect(minx,miny,maxx,maxy){
+    this.tl = [minx || 0, miny || 0]; //top left point
+    this.br = [maxx || 0, maxy || 0]; //bottom right point
+}
+
+Rect.prototype.isCollide = function(rect){
+    if(rect.br[0] < this.tl[0] || rect.tl[0] > this.br[0] ||
+        rect.br[1] < this.tl[1] || rect.tl[1] > this.br[1]){
+        return false;
+    }
+    return true;
 }
 
 GeomUtility.getBoundingRect = function(points){
@@ -45,33 +53,6 @@ GeomUtility.getBoundingRect = function(points){
     rect.br = [maxX, maxY];
     return rect;
 }
-//---------------------the Sprite class------------------
-function CanvasSprite(params){
-    var _this = this,
-        _ctx = params.ctx,
-        _width = params.width,
-        _height = params.height,
-        _offsetX = 0,
-        _offsetY = 0,
-        _visible = true,
-
-        _img = new Image();
-    _img.src = params.image;
-
-    this.draw = function(x, y){
-        if(_visible){
-            _ctx.drawImage(_img,_offsetX, _offsetY, _width, _height, x >> 0, y >> 0, _width, _height);
-        }
-    }
-
-    this.show = function(){
-        _visible = true;
-    }
-
-    this.hide = function(){
-        _visible = false;
-    }
-}
 
 //---------------------the Mall class--------------------
 function Mall(){
@@ -92,6 +73,11 @@ function Mall(){
     //get current floor id
     this.getCurFloorId = function() {
         return _curFloorId;
+    }
+
+    //get floor num
+    this.getFloorNum = function(){
+        return _this.jsonData.data.Floors.length;
     }
 
     //get floor by id
@@ -193,12 +179,12 @@ var defaultTheme = {
     selected: 0xffff55,
 
     //rooms' style
-    room: function (type) {
+    room: function (type, category) {
         switch (type) {
 
             case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
                 return {
-                    color: "#212121",
+                    color: "#e6e6e6",
                     opacity: 0.8,
                     transparent: true
                 }
@@ -214,67 +200,66 @@ var defaultTheme = {
                     opacity: 0.7,
                     transparent: true
                 };
-            case "50100": //chinese food
+            default :
+        }
+
+        switch(category) {
+            case 101: //food
                 return {
                     color: "#d8992c",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "50117": //hotpot
-                return {
-                    color: "#e6a1d1",
-                    opacity: 0.7,
-                    transparent: true
-                };
-            case "50201": //i don't know. some kinds of food...
-                return {
-                    color: "#b9b3ff",
-                    opacity: 0.7,
-                    transparent: true
-                };
-            case "50300": //western food
-                return {
-                    color: "#a1e5e6",
-                    opacity: 0.7,
-                    transparent: true
-                };
-            case "50300": //western food
-                return {
-                    color: "#9e9323",
-                    opacity: 0.7,
-                    transparent: true
-                };
-            case "61102": //shoes
+            case 102: //retail
                 return {
                     color: "#99455e",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "61103": //bags
+            case 103: //toiletry
                 return {
                     color: "#17566a",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "61202": //jewelry
+            case 104: //parent-child
+                return {
+                    color: "#17566a",
+                    opacity: 0.7,
+                    transparent: true
+                };
+            case 105: //life services
+                return {
+                    color: "#e6a1d1",
+                    opacity: 0.7,
+                    transparent: true
+                };
+            case 106: //education
+                return {
+                    color: "#b9b3ff",
+                    opacity: 0.7,
+                    transparent: true
+                };
+            case 107: //life style
                 return {
                     color: "#d6675b",
                     opacity: 0.7,
                     transparent: true
                 };
-            case "61400": //toiletry
+            case 108: //entertainment
                 return {
-                    color: "#17566a",
+                    color: "#a1e5e6",
                     opacity: 0.7,
                     transparent: true
                 };
-
-            default : //default
+            case 109: //others
+            default :
                 return {
                     color: "#d0641a",
                     opacity: 0.7,
                     transparent: true
                 };
+
         }
     },
 
@@ -286,6 +271,10 @@ var defaultTheme = {
         linewidth: 1
     },
 
+    fontStyle:{
+        fontsize: 40
+    },
+
     pubPointImg: {
 
         "11001": System.imgPath+"/toilet.png",
@@ -295,43 +284,6 @@ var defaultTheme = {
         "21002": System.imgPath+"/escalator.png",
         "21003": System.imgPath+"/lift.png"
     }
-
-    ////icons of the labels
-    //pubPointImg: function(type){
-    //    switch (type){
-    //        case "000300": //closed area
-    //            return "./img/indoor_floor_normal.png";
-    //        case "11001": //WC
-    //            return "./img/toilet.png";
-    //        case "11002": //atm
-    //            return "./img/ATM.png";
-    //        //case "11003": //cashier
-    //        //    return "./img/indoor_pub_cashier.png";
-    //        //case "11004": //office
-    //        //    return "./img/indoor_pub_office.png";
-    //        case "21001": //staircase
-    //            return "./img/stair.png";
-    //        case "21002": //escalator
-    //            return "./img/escalator.png";
-    //        case "21003": //elevator
-    //            return "./img/lift.png";
-    //        case "050100": //food
-    //            return "./img/indoor_func_am0010.png";
-    //        case "061102": //shoes
-    //            return "./img/indoor_func_am0006.png";
-    //        case "061103": //bags
-    //            return "./img/indoor_func_am0009.png";
-    //        case "061202": //jewelry
-    //            return "./img/indoor_func_am0002.png";
-    //        case "061400": //toiletry
-    //            return "./img/indoor_func_am0005.png";
-    //        case "22006": //gate
-    //            return "./img/entry.png";
-    //
-    //        default : //default
-    //            return "./img/default-point.png";
-    //    }
-    //}
 }
 //----------------------------the Loader class --------------------------
 IndoorMapLoader= function ( is3d ) {
@@ -464,6 +416,8 @@ function ParseModel(json, is3d){
 
                 mall.floors.push(floorObj);
             }else{//for 2d model
+                floor.strokeStyle = mall.theme.strokeStyle.color;
+                floor.fillColor = mall.theme.floor.color;
                 mall.floors.push(floor);
             }
 
@@ -483,7 +437,7 @@ function ParseModel(json, is3d){
                     //solid model
                     extrudeSettings = {amount: floorHeight, bevelEnabled: false};
                     geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                    material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type));
+                    material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type, funcArea.Category));
                     mesh = new THREE.Mesh(geometry, material);
                     mesh.type = "solidroom";
                     mesh.id = funcArea._id;
@@ -497,7 +451,8 @@ function ParseModel(json, is3d){
 
                     floorObj.add(wire);
                 }else{
-                    funcArea.fillColor = mall.theme.room(funcArea.Type).color;
+                    funcArea.fillColor = mall.theme.room(funcArea.Type, funcArea.Category).color;
+                    funcArea.strokeColor = mall.theme.strokeStyle.color;
 
                 }
             }
@@ -559,17 +514,10 @@ function ParseModel(json, is3d){
 
 var IndoorMap = function (params) {
     var _this = this;
-    var _scene, _controls, _renderer, _projector, _rayCaster;
-    var _mapDiv, _canvasDiv, _labelsRoot, _uiRoot, _uiSelected;
-    var _selected;
-    var _showLabels = false, _showPubPoints = true;
-    var _curFloorId = 0;
+    var _mapDiv, _canvasDiv, _uiRoot, _uiSelected;
     var _fullScreen = false;
-    var _selectionListener = null;
-    var _sceneOrtho, _cameraOrtho;//for 2d
-    var _canvasWidth, _canvasHeight, _canvasWidthHalf, _canvasHeightHalf;
     this.is3d = true;
-    var _spriteMaterials = [], _pubPointSprites=null;
+    var _indoorMap;
 
     //initialization
     this.init = function (params) {
@@ -598,393 +546,18 @@ var IndoorMap = function (params) {
             window.addEventListener('resize', onWindowResize, false);
         }
 
-        _canvasWidth = _mapDiv.clientWidth;
-        _canvasWidthHalf = _canvasWidth / 2;
-        _canvasHeight = _mapDiv.clientHeight;
-        _canvasHeightHalf = _canvasHeight / 2;
-
-        // set up the scene
-        _scene = new THREE.Scene();
-        _this.camera = new THREE.PerspectiveCamera(20, _canvasWidth / _canvasHeight, 0.1, 2000);
-
-        _sceneOrtho = new THREE.Scene();
-        _cameraOrtho = new THREE.OrthographicCamera(- _canvasWidthHalf, _canvasWidthHalf, _canvasHeightHalf, -_canvasHeightHalf, 1, 10);
-        _cameraOrtho.position.z = 10;
-        _controls = new THREE.OrbitControls(_this.camera);
-
         // webgl detection
         if (Detector.webgl && _this.is3d) {
-            _renderer = new THREE.WebGLRenderer({ antialias: true });
-            _renderer.autoClear = false;
-            var light = new THREE.DirectionalLight(0xffffff);
-            light.position.set(-500, 500, -500);
-            _scene.add(light);
-
+            _indoorMap = new IndoorMap3d(_mapDiv);
         } else {
-            _renderer = new Canvas2DRenderer();
-            //_renderer = new THREE.CanvasRenderer();
-            _controls.is3d = false;
+            _indoorMap = new IndoorMap2d(_mapDiv);
             _this.is3d = false;
         }
 
-        //set up the lights
-        var light = new THREE.DirectionalLight(0xffffff);
-        light.position.set(500, 500, 500);
-        _scene.add(light);
-
-        _renderer.setSize(_mapDiv.clientWidth, _mapDiv.clientHeight);
-        _canvasDiv = _renderer.domElement
-        _mapDiv.appendChild(_canvasDiv);
-        _mapDiv.style.overflow = "hidden";
-        _canvasDiv.style.width = "100%";
-        _canvasDiv.style.height = "100%";
-
 
     }
 
-    //load the map by the jason file name
-    this.load = function (fileName, callback) {
-        var loader = new IndoorMapLoader(_this.is3d);
-        loader.load(fileName, function(mall){
-            _this.mall = mall;
-            _scene.add(_this.mall.root);
-            _scene.mall = mall;
-            if(callback) {
-                callback();
-            }
-            _renderer.setClearColor(_this.mall.theme.background);
-            if(_curFloorId == 0){
-               _this.showAllFloors();
-            }else{
-                _this.showFloor(_curFloorId);
-            }
 
-        });
-    }
-
-    //parse the json file
-    this.parse = function(json){
-        _this.mall = ParseModel(json, _this.is3d);
-        _scene.mall = _this.mall;
-        _this.showFloor(_this.mall.getDefaultFloorId());
-        _renderer.setClearColor(_this.mall.theme.background);
-        if(_this.is3d) {
-            _scene.add(_this.mall.root);
-        }
-    }
-
-    //reset the camera to default configuration
-    this.setDefaultView = function () {
-        if(_this.is3d) {
-            _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
-            _this.camera.lookAt(_scene.position);
-        }else{
-            _renderer.setDefaultView(_this.mall.getCurFloor());
-        }
-
-        _controls.reset();
-        _controls.viewChanged = true;
-    }
-
-    this.setTopView = function(){
-        _this.camera.position.set(0, 500, 0);
-    }
-
-    //TODO:adjust camera to fit the building
-    this.adjustCamera = function() {
-        _this.setDefaultView();
-
-    }
-
-    this.zoomIn = function(zoomScale){
-        _controls.zoomOut(zoomScale);
-    }
-
-    this.zoomOut = function(zoomScale){
-        _controls.zoomIn(zoomScale);
-    }
-
-    //resize the map
-    this.resize = function (width, height){
-        if(_fullScreen) {
-            _mapDiv.style.width = width + "px";
-            _mapDiv.style.height = height + "px";
-        }
-        _this.camera.aspect = width / height;
-        _this.camera.updateProjectionMatrix();
-
-        _renderer.setSize( width, height );
-        _controls.viewChanged = true;
-    }
-
-    //set if the objects are selectable
-    this.setSelectable = function (selectable) {
-        if(selectable){
-            _projector = new THREE.Projector();
-            _rayCaster = new THREE.Raycaster();
-            _mapDiv.addEventListener('mousedown', onSelectObject, false);
-            _mapDiv.addEventListener('touchstart', onSelectObject, false);
-        }else{
-            _mapDiv.removeEventListener('mousedown', onSelectObject, false);
-            _mapDiv.removeEventListener('touchstart', onSelectObject, false);
-        }
-    }
-
-    //show the labels
-    this.showLabels = function(show) {
-
-        _showLabels = show == undefined ? true : show;
-
-        if(_this.mall == null){ //if the mall hasn't been loaded
-            return;
-        }else { //the mall has already been loaded
-            if (_showLabels) {
-                var fid = _this.mall.getCurFloorId();
-                if(fid != 0) {
-                    createLabels(fid);
-                    _labelsRoot.style.display = "inline";
-                    updateLabels();
-                }
-            } else {
-                if(_labelsRoot != null) {
-                    _labelsRoot.style.display = "none";
-                }
-            }
-        }
-    }
-
-    //show pubPoints(entries, ATM, escalator...)
-    this.showPubPoints = function(show){
-        _showPubPoints = show == undefined ? true: show;
-
-        if(_this.mall == null){//if the mall hasn't been loaded
-            return;
-        }else{//the mall has already been loaded
-            if(_showPubPoints){
-                if(_spriteMaterials.length == 0){
-                    loadSprites();
-                }
-            }
-        }
-    }
-
-    //get the UI
-    this.getUI = function() {
-        if(_this.mall == null){
-            console.error("the data has not been loaded yet. please call this function in callback")
-            return null;
-        }
-        //create the ul list
-        _uiRoot = document.createElement('ul');
-        _uiRoot.className = 'floorsUI';
-
-        var li = document.createElement('li');
-        var text = document.createTextNode('All');
-
-        li.appendChild(text);
-        _uiRoot.appendChild(li);
-        li.onclick = function(){
-            _this.showAllFloors();
-        }
-
-        for(var i = 0; i < this.mall.jsonData.data.Floors.length; i++){
-            (function(arg){
-                li = document.createElement('li');
-                text = document.createTextNode(_this.mall.jsonData.data.Floors[i].Name);
-                li.appendChild(text);
-                li.onclick = function () {
-                    _this.showFloor(_this.mall.floors[arg]._id);
-                }
-                _uiRoot.appendChild(li);
-            })(i);
-        }
-        return _uiRoot;
-    }
-
-    //get the selected object
-    this.getSelected = function(){
-        return _selected;
-    }
-
-    //get the selected object
-    this.getSelectedId = function(){
-        return _selected.id;
-    }
-
-    //the callback function when sth is selected
-    this.setSelectionListener = function(callback){
-        _selectionListener = callback;
-    }
-
-    //select object by id
-    this.selectById = function(id){
-        var floor = _this.getCurFloor();
-        for(var i = 0; i < floor.children.length; i++){
-            if(floor.children[i].id && floor.children[i].id == id) {
-                if (_selected) {
-                    _selected.material.color.setHex(_selected.currentHex);
-                }
-                _this.select(floor.children[i]);
-            }
-        }
-    }
-
-    //select object(just hight light it)
-    this.select = function(obj){
-        obj.currentHex = _selected.material.color.getHex();
-        obj.material.color.setHex(_this.mall.theme.selected);
-    }
-
-    //show the floor by id
-    this.showFloor = function(floorid) {
-        _curFloorId = floorid;
-        if(_this.mall == null){
-            return;
-        }
-        _this.mall.showFloor(floorid);
-        _this.adjustCamera();
-        createPubPointSprites(floorid);
-        _this.showLabels(_showLabels);
-        updateUI();
-        redraw();
-    }
-
-    //show all floors
-    this.showAllFloors = function(){
-        _curFloorId = 0; //0 for showing all
-        if(_this.mall == null){
-            return;
-        }
-        _this.mall.showAllFloors();
-        _this.adjustCamera();
-        if(_labelsRoot != null){
-            _labelsRoot.innerHTML = ""; //clear the labels when showing all
-        }
-        clearPubPointSprites();
-        updateUI();
-    }
-
-    //create the labels by floor id
-    function createLabels(floorId){
-        //create the root
-        if(typeof _labelsRoot === "undefined") {
-            _labelsRoot = document.createElement("div");
-            _labelsRoot.className = "mapLabels";
-            _mapDiv.appendChild(_labelsRoot);
-        }
-        _labelsRoot.innerHTML = "";
-
-        if(typeof _this.mall === "undefined"){
-            return;
-        }
-
-        var floorPoints = _this.mall.getFloor(floorId).points;
-        for(var i=0 ; i < floorPoints.length; i++) {
-            var div = document.createElement('div');
-            var imgsrc = _this.mall.theme.pubPointImg(floorPoints[i].type);
-            if(imgsrc != null && imgsrc != "") {
-                var img = document.createElement('img');
-                img.setAttribute('src', imgsrc);
-                div.appendChild(img);
-            }
-
-            if(floorPoints[i].type[0] == '2')//stairs,gates...
-            {
-                div.className = 'pubPoints';
-            }else{
-                var text = document.createTextNode(floorPoints[i].name);
-                div.appendChild(text);
-            }
-            _labelsRoot.appendChild(div);
-        }
-
-    }
-
-    //labels includes pubPoints and shop names
-    function updateLabels() {
-        var mall = _this.mall;
-        if(mall == null || _controls == null || !_controls.viewChanged){
-            return;
-        }
-        var curFloor = mall.getCurFloor();
-        if(curFloor == null){
-            return;
-        }
-
-        var projectMatrix = null;
-        var halfWidth, halfHeight;
-        if(_showLabels) {
-            if (_labelsRoot.children.length == 0) {
-                return;
-            }
-            var floorPoints = mall.getCurFloor().points;
-
-            projectMatrix = new THREE.Matrix4();
-            projectMatrix.multiplyMatrices(_this.camera.projectionMatrix, _this.camera.matrixWorldInverse);
-
-            for (var i = 0; i < floorPoints.length; i++) {
-                var vec = new THREE.Vector3(floorPoints[i].position.x, floorPoints[i].position.y, floorPoints[i].position.z);
-                vec.applyProjection(projectMatrix);
-                var pos = {
-                    x: Math.round(vec.x * _canvasWidthHalf + _canvasWidthHalf),
-                    y: Math.round(-vec.y * _canvasHeightHalf + _canvasHeightHalf)
-                };
-                _labelsRoot.children[i].style.left = pos.x + 'px';
-                _labelsRoot.children[i].style.top = pos.y + 'px';
-                _labelsRoot.children[i].style.position = 'absolute';
-
-                if (pos.x < 0 || pos.x > _canvasWidth || pos.y < 0 || pos.y > _canvasHeight) {
-                    _labelsRoot.children[i].style.display = "none";
-                } else {
-                    _labelsRoot.children[i].style.display = "inline";
-                }
-            }
-        }
-
-        if(_showPubPoints){
-            if(!projectMatrix){
-                projectMatrix = new THREE.Matrix4();
-                projectMatrix.multiplyMatrices(_this.camera.projectionMatrix, _this.camera.matrixWorldInverse);
-            }
-            var pubPointsJson = _this.mall.getFloorJson(mall.getCurFloorId()).PubPoint;
-
-            for(var i = 0 ; i < _pubPointSprites.children.length; i++){
-                var sprite = _pubPointSprites.children[i];
-                var vec = new THREE.Vector3(sprite.oriX * 0.1, 0, -sprite.oriY * 0.1);
-                vec.applyProjection(projectMatrix);
-
-                var x = Math.round(vec.x * _canvasWidthHalf);
-                var y = Math.round(vec.y * _canvasHeightHalf);
-                sprite.position.set(x, y, 1);
-
-                //check collision with the former sprites
-                var visible = true;
-                var visibleMargin = 5;
-                for(var j = 0; j < i; j++){
-                    var img = sprite.material.map.image;
-                    if(!img){
-                        visible = false;
-                        break;
-                    }
-
-                    var dis = sprite.position.distanceTo( _pubPointSprites.children[j].position ) ;
-
-                    if(dis < img.width){
-                        visible = false;
-                        break;
-                    }
-
-                    if(sprite.visible == false && dis < sprite.material.map.image.width + visibleMargin){
-                        visible = false;
-                        break;
-                    }
-                }
-                sprite.visible = visible;
-
-            }
-        }
-        _controls.viewChanged = false;
-    };
 
     function updateUI() {
         if(_uiRoot == null){
@@ -1012,141 +585,40 @@ var IndoorMap = function (params) {
         }
     }
 
-    function animate () {
-        requestAnimationFrame(animate);
-        _controls.update();
-        if(_controls.viewChanged) {
-
-            _renderer.clear();
-            _renderer.render(_scene, _this.camera);
-
-
-            if(_showLabels || _showPubPoints){
-                updateLabels();
-            }
-            _renderer.clearDepth();
-            _renderer.render(_sceneOrtho, _cameraOrtho);
-        }
-
-        _controls.viewChanged = false;
-    }
-
-    function redraw(){
-        _controls.viewChanged = true;
-    }
-
-    function onSelectObject() {
-
-        // find intersections
-        event.preventDefault();
-        var mouse = new THREE.Vector2();
-        if(event.type == "touchstart"){
-            mouse.x = ( event.touches[0].clientX / _canvasDiv.clientWidth ) * 2 - 1;
-            mouse.y = -( event.touches[0].clientY / _canvasDiv.clientHeight ) * 2 + 1;
-        }else {
-            mouse.x = ( event.clientX / _canvasDiv.clientWidth ) * 2 - 1;
-            mouse.y = -( event.clientY / _canvasDiv.clientHeight ) * 2 + 1;
-        }
-        var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
-        vector.unproject( _this.camera);
-
-        _rayCaster.set( _this.camera.position, vector.sub( _this.camera.position ).normalize() );
-
-        var intersects = _rayCaster.intersectObjects( _this.mall.root.children[0].children );
-
-        if ( intersects.length > 0 ) {
-
-            if ( _selected != intersects[ 0 ].object ) {
-
-                if ( _selected ) {
-                    _selected.material.color.setHex( _selected.currentHex );
-                }
-                for(var i=0; i<intersects.length; i++) {
-                    _selected = intersects[ i ].object;
-                    if(_selected.type && _selected.type == "solidroom") {
-                        _this.select(_selected);
-                        if(_selectionListener) {
-                            _selectionListener(_selected.id); //notify the listener
-                        }
-                        break;
-                    }else{
-                        _selected = null;
-                    }
-                    if(_selected == null && _selectionListener != null){
-                        _selectionListener(-1);
-                    }
-                }
-            }
-
-        } else {
-
-            if ( _selected ) {
-                _selected.material.color.setHex( _selected.currentHex );
-            }
-
-            _selected = null;
-            if(_selectionListener) {
-                _selectionListener(-1); //notify the listener
-            }
-        }
-        redraw();
-
-    }
-
-    function onWindowResize(){
-        _this.resize(window.innerWidth, window.innerHeight);
-    }
-
-    //load Sprites
-    function loadSprites(){
-        if(_this.mall != null && _spriteMaterials.length == 0){
-            var images = _this.mall.theme.pubPointImg;
-            for(var key in images){
-                var texture = THREE.ImageUtils.loadTexture(images[key], undefined, redraw);
-                var material = new THREE.SpriteMaterial({map:texture});
-                _spriteMaterials[key] = material;
-            }
-        }
-        _spriteMaterials.isLoaded = true;
-    }
-
-    //create the sprites in a floor by the floor id
-    function createPubPointSprites(floorId){
-        if(!_spriteMaterials.isLoaded){
-            loadSprites();
-        }
-
-        if(!_pubPointSprites) {
-
-            _pubPointSprites = new THREE.Object3D();
-        }else{
-
-            clearPubPointSprites();
-        }
-
-        var pubPointsJson = _this.mall.getFloorJson(_this.mall.getCurFloorId()).PubPoint;
-        var imgWidth, imgHeight;
-        for(var i = 0; i < pubPointsJson.length; i++){
-            var spriteMat = _spriteMaterials[pubPointsJson[i].Type];
-            if(spriteMat !== undefined) {
-                //imgWidth = spriteMat.map.image.width;
-                //imgHeight = spriteMat.map.image.height;
-                imgWidth = 30, imgHeight = 30;
-                var sprite = new THREE.Sprite(spriteMat);
-                sprite.scale.set(imgWidth, imgHeight, 1);
-                sprite.oriX = pubPointsJson[i].Outline[0][0][0];
-                sprite.oriY = pubPointsJson[i].Outline[0][0][1];
-                _pubPointSprites.add(sprite);
-            }
-        }
-        _sceneOrtho.add(_pubPointSprites);
-    }
-
-    function clearPubPointSprites(){
-        _pubPointSprites.remove(_pubPointSprites.children);
-        _pubPointSprites.children.length = 0;
-    }
-
     _this.init(params);
-    animate();
+    return _indoorMap;
+}
+
+//get the UI
+IndoorMap.getUI = function(indoorMap) {
+    var _indoorMap = indoorMap;
+    if(_indoorMap.mall == null){
+        console.error("the data has not been loaded yet. please call this function in callback")
+        return null;
+    }
+    //create the ul list
+    _uiRoot = document.createElement('ul');
+    _uiRoot.className = 'floorsUI';
+
+    var li = document.createElement('li');
+    var text = document.createTextNode('All');
+
+    li.appendChild(text);
+    _uiRoot.appendChild(li);
+    li.onclick = function(){
+        _indoorMap.showAllFloors();
+    }
+
+    for(var i = 0; i < _indoorMap.mall.getFloorNum(); i++){
+        (function(arg){
+            li = document.createElement('li');
+            text = document.createTextNode(_indoorMap.mall.jsonData.data.Floors[i].Name);
+            li.appendChild(text);
+            li.onclick = function () {
+                _indoorMap.showFloor(_indoorMap.mall.floors[arg]._id);
+            }
+            _uiRoot.appendChild(li);
+        })(i);
+    }
+    return _uiRoot;
 }
