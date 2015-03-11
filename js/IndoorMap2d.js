@@ -213,8 +213,13 @@ Canvas2DRenderer = function (mapDiv) {
             _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
             _centerY = (object.rect.br[1] + object.rect.tl[1])/2;
             _canvas.style.position = "absolute";
-            _canvas.style.top = -(_canvasWidth - parseInt(_parentDiv.style.width))/2 + "px";
-            _canvas.style.left = -(_canvasHeight - parseInt(_parentDiv.style.height))/2 + "px";
+            _canvas.style.left = -(_canvasWidth - parseInt(_parentDiv.style.width))/2 + "px";
+            _canvas.style.top = -(_canvasHeight - parseInt(_parentDiv.style.height))/2 + "px";
+
+
+            _canvas.style.left = -_canvasWidthHalf +(_parentWidth/2 - _centerX*_scale) + "px";
+            _canvas.style.top = -_canvasHeightHalf +(_parentHeight/2 - _centerY*_scale) + "px";
+
         }
     }
     this.render = function (mall, camera){

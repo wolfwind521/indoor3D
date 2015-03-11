@@ -18,16 +18,24 @@
     }
 }
 
-.floorsUI
+
+.floorsUI, .testButton
 {
     position: absolute;;
-    top:100px;
-    left: 0px;
     list-style: none;
     padding: 0;
+    left: 0px;
 }
 
-.floorsUI li, .testButton{
+.floorsUI{
+    top:100px;
+}
+
+.testButton{
+    top: 500px;
+}
+
+.floorsUI li, .testButton li{
     max-width: 100px;
     padding: 10px;
     background-color: #e8e8e8 ;

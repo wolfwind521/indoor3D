@@ -93,7 +93,7 @@ IndoorMap3d = function(mapdiv){
 
     //reset the camera to default configuration
     this.setDefaultView = function () {
-        _this.camera.position.set(0, 150, 400);//TODO: adjust the position automatically
+        _this.camera.position.set(0, 300, 400);//TODO: adjust the position automatically
         _this.camera.lookAt(_scene.position);
 
         _controls.reset();
