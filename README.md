@@ -38,12 +38,12 @@ a little more complex example：
     var params = {
         mapDiv:"indoor3d"
     }
-    var indoorMap = new Indoor3D(params);
+    var indoorMap = Indoor3D(params);
     indoorMap.load('B000A9R4FE.json', function(){
         indoorMap.showAllFloors();
         indoorMap.showLabels(true);
         indoorMap.setSelectable(true);
-        var ul = indoorMap.getUI();
+        var ul = indoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
     });
 </script>
@@ -57,6 +57,8 @@ a little more complex example：
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/Indoor3D.js"></script>
+<script src="js/IndoorMap2d.js"></script>
+<script src="js/IndoorMap3d.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 ```
   - [three.min.js](http://threejs.org/): a 3D javascript library
@@ -66,7 +68,7 @@ a little more complex example：
 2) set up the parent `<div>` node of the indoor map and pass the params
 ```js
 var params={mapDiv:"indoor3d"};
-var indoorMap = new Indoor3D(params);
+var indoorMap = Indoor3D(params);
 ```
 So there must be a corresponding `<div id="indoor3d">` tag in your html codes, or it will create a fullscreen map.
 If there is no params passed to Indoor3D, it will create a fullscreen one as well:
@@ -79,7 +81,7 @@ var indoorMap = new Indoor3D();
 indoorMap.load('B000A9R4FE.json', function(){
         indoorMap.showAllsFloor();
         indoorMap.setSelectable(true);
-        var ul = indoorMap.getUI();
+        var ul = IndoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
     });
 ```

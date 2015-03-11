@@ -176,7 +176,7 @@ var defaultTheme = {
     },
 
     //selected room's style
-    selected: 0xffff55,
+    selected: "#ffff55",
 
     //rooms' style
     room: function (type, category) {
