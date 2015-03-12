@@ -105,7 +105,7 @@ IndoorMap2d = function(mapdiv){
             //createPubPointSprites(floorid);
         }
         if(_showNames) {
-            //createNameSprites(floorid);
+            _this.renderer.createNameTexts(floorid, _this.mall);
         }
         redraw();
     }
@@ -114,11 +114,11 @@ IndoorMap2d = function(mapdiv){
     //set if the objects are selectable
     this.setSelectable = function (selectable) {
         if(selectable){
-            _mapDiv.addEventListener('mousedown', onSelectObject, false);
-            _mapDiv.addEventListener('touchstart', onSelectObject, false);
+            _mapDiv.addEventListener('mouseup', onSelectObject, false);
+            _mapDiv.addEventListener('touchend', onSelectObject, false);
         }else{
-            _mapDiv.removeEventListener('mousedown', onSelectObject, false);
-            _mapDiv.removeEventListener('touchstart', onSelectObject, false);
+            _mapDiv.removeEventListener('mouseup', onSelectObject, false);
+            _mapDiv.removeEventListener('touchend', onSelectObject, false);
         }
     }
 
@@ -131,34 +131,38 @@ IndoorMap2d = function(mapdiv){
     function onSelectObject(event){
         event.preventDefault();
         var pos = [0,0]
-        if(event.type == "touchstart"){
-            pos[0] = event.touches[0].clientX-8;
-            pos[1] = event.touches[0].clientY+25;
+        if(event.type == "touchend"){
+            pos[0] = event.changedTouches[0].clientX;
+            pos[1] = event.changedTouches[0].clientY;
         }else {
-            pos[0] = event.clientX-8;
-            pos[1] = event.clientY+25;
+            pos[0] = event.clientX;
+            pos[1] = event.clientY;
         }
 
-        if(_selected){
-            _selected.fillColor = _selectedOldColor;
-        }
+        if(pos[0] == _controls.startPoint[0] && pos[1] == _controls.startPoint[1]) {
 
-        _selected = _this.renderer.onSelect(pos);
-
-        if(_selected){
-            select(_selected)
-            if(_selectionListener) {
-                _selectionListener(_selected._id);
+            pos[0] -= 8;
+            pos[1] += 25;
+            if (_selected) {
+                _selected.fillColor = _selectedOldColor;
             }
-        }else{
-            if(_selectionListener) {
-                _selectionListener(-1);
+
+            _selected = _this.renderer.onSelect(pos);
+
+            if (_selected) {
+                select(_selected)
+                if (_selectionListener) {
+                    _selectionListener(_selected._id);
+                }
+            } else {
+                if (_selectionListener) {
+                    _selectionListener(-1);
+                }
             }
+            redraw();
         }
-        redraw();
 
     }
-
 
     function redraw(){
         _controls.viewChanged = true;
@@ -228,6 +232,7 @@ Canvas2DRenderer = function (mapDiv) {
 
         _clearColor,
         _showNames = true,
+        _nameTexts = [],
         _showPubPoints = true,
     _ctx = _canvas.getContext('2d'),
     _clearColor,
@@ -284,9 +289,9 @@ Canvas2DRenderer = function (mapDiv) {
         _ctx.fillStyle = _curFloor.fillColor;
         _ctx.fill();
 
-
-        for(var i = 0 ; i < _curFloor.FuncAreas.length; i++){
-            var funcArea = _curFloor.FuncAreas[i];
+        var funcAreas = _curFloor.FuncAreas;
+        for(var i = 0 ; i < funcAreas.length; i++){
+            var funcArea = funcAreas[i];
             var poly = funcArea.Outline[0][0];
             if(poly.length < 6){ //less than 3 points, return
                 return;
@@ -305,19 +310,55 @@ Canvas2DRenderer = function (mapDiv) {
 
             _ctx.fillStyle = funcArea.fillColor;
             _ctx.fill();
-
-
-
-            if(_showNames){//draw shop names
-
-            }
         }
 
         _ctx.restore();
+
+        if(_showNames){
+
+            _ctx.textBaseline="middle";
+            _ctx.fillStyle = mall.theme.fontStyle.color;
+            var textRects = [];
+            for(var i = 0 ; i < funcAreas.length; i++){
+                var nameText = _nameTexts[i];
+                var center = funcAreas[i].Center;
+                center = _this.localToWorld(center);
+
+                var rect = new Rect(center[0] - nameText.halfWidth, center[1] - nameText.halfHeight, center[0] + nameText.halfWidth, center[1] + nameText.halfHeight);
+                textRects.push(rect);
+
+                nameText.visible = true;
+                for(var j = 0; j < i; j++){
+                    if(_nameTexts[j].visible && textRects[j].isCollide(rect)){
+                        nameText.visible = false;
+                        break;
+                    }
+                }
+                if(nameText.visible) {
+                    _ctx.fillText(nameText.text, center[0] - nameText.halfWidth, center[1]);
+//                _ctx.beginPath();
+//                _ctx.arc(center[0], center[1], 3, 0, Math.PI * 2, true);
+//                _ctx.closePath();
+//
+//                _ctx.fill();
+//                    _ctx.strokeRect(rect.tl[0], rect.tl[1], rect.br[0] - rect.tl[0], rect.br[1] - rect.tl[1]);
+                }
+            }
+
+        }
 //        //test: render the clicked point
 //        _ctx.fillStyle='#FF0000';
 //        _ctx.fillRect(_canvasPos[0], _canvasPos[1], 4, 4);
 
+
+
+    }
+
+    this.localToWorld = function(pt){
+        var worldPoint = [0,0];
+        worldPoint[0] = _canvasWidthHalf + (pt[0] - _centerX) * _scale;
+        worldPoint[1] = _canvasHeightHalf + (pt[1] - _centerY) * _scale;
+        return worldPoint;
     }
 
     this.onSelect = function(point){
@@ -390,28 +431,48 @@ Canvas2DRenderer = function (mapDiv) {
         return null;
     }
 
+    this.createNameTexts = function(floorId, mall){
+        if(_nameTexts.length != 0){
+            _nameTexts.length = 0;
+        }
+        var funcAreaJson = mall.getFloorJson(mall.getCurFloorId()).FuncAreas;
+        var fontStyle = mall.theme.fontStyle;
+        _ctx.font =  "14px " + fontStyle.fontface;
+        for(var i = 0 ; i < funcAreaJson.length; i++){
+            var name = {};
+            name.text = funcAreaJson[i].Name;
+            name.halfWidth = _ctx.measureText(name.text).width/2;
+            name.halfHeight = fontStyle.fontsize/4;
+            name.visible = true;
+
+            _nameTexts.push(name);
+        }
+    }
+
     _this.setSize(2000, 2000);
 }
 
+//---------------------Controller2D class-----------------
 
 Controller2D = function(domElement){
     this.domElement = ( domElement !== undefined ) ? domElement : document;
     this.viewChanged = true;
 
     var _top, _left;
+    var _curTop, _curLeft;
 
-    var _clickPoint=[0,0],
-        _panStart = [0,0],
-        _panEnd = [0,0],
-        _this = this
+    var _this = this;
+
+    this.startPoint = [0, 0];
+    this.endPoint = [0, 0];
 
     this.reset = function(){
-        _panStart = [0,0];
-        _panEnd = [0,0];
+        _this.startPoint = [0,0];
+        _this.endPoint = [0,0];
     }
     function touchStart(event){
-        _panStart[0] = event.touches[0].clientX;
-        _panStart[1] = event.touches[0].clientY;
+        _this.startPoint[0] = event.touches[0].clientX;
+        _this.startPoint[1] = event.touches[0].clientY;
 
         document.addEventListener('touchend', touchEnd, false);
         document.addEventListener('touchmove', touchMove, false);
@@ -422,8 +483,8 @@ Controller2D = function(domElement){
     }
 
     function mouseDown(event){
-        _panStart[0] = event.clientX;
-        _panStart[1] = event.clientY;
+        _this.startPoint[0] = event.clientX;
+        _this.startPoint[1] = event.clientY;
 
         document.addEventListener('mouseup', mouseUp, false);
         document.addEventListener('mousemove', mouseMove, false);
@@ -437,13 +498,16 @@ Controller2D = function(domElement){
         event.preventDefault();
         event.stopPropagation();
 
-        _panEnd[0] = event.touches[0].clientX;
-        _panEnd[1] = event.touches[0].clientY;
+        _this.endPoint[0] = event.touches[0].clientX;
+        _this.endPoint[1] = event.touches[0].clientY;
 
-        var subVector = [_panEnd[0]-_panStart[0], _panEnd[1]-_panStart[1]];
+        var subVector = [_this.endPoint[0]-_this.startPoint[0], _this.endPoint[1]-_this.startPoint[1]];
 
-        domElement.style.left = (_left + subVector[0]) + "px";
-        domElement.style.top = (_top + subVector[1]) + "px";
+        _curLeft = (_left + subVector[0]);
+        _curTop = (_top + subVector[1]);
+
+        domElement.style.left =  _curLeft + "px";
+        domElement.style.top =  _curTop + "px";
 
     }
 
@@ -451,13 +515,15 @@ Controller2D = function(domElement){
         event.preventDefault();
         event.stopPropagation();
 
-        _panEnd[0] = event.clientX;
-        _panEnd[1] = event.clientY;
+        _this.endPoint[0] = event.clientX;
+        _this.endPoint[1] = event.clientY;
 
-        var subVector = [_panEnd[0]-_panStart[0], _panEnd[1]-_panStart[1]];
+        var subVector = [_this.endPoint[0]-_this.startPoint[0], _this.endPoint[1]-_this.startPoint[1]];
 
-        domElement.style.left = (_left + subVector[0]) + "px";
-        domElement.style.top = (_top + subVector[1]) + "px";
+        _curLeft = (_left + subVector[0]);
+        _curTop = (_top + subVector[1]);
+        domElement.style.left = _curLeft + "px";
+        domElement.style.top = _curTop + "px";
 
     }
 

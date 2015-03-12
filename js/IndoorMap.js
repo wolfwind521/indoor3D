@@ -272,7 +272,9 @@ var defaultTheme = {
     },
 
     fontStyle:{
-        fontsize: 40
+        color: "#231815",
+        fontsize: 40,
+        fontface: "Microsoft YaHei"
     },
 
     pubPointImg: {
