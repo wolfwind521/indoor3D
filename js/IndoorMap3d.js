@@ -89,6 +89,7 @@ IndoorMap3d = function(mapdiv){
         _this.showFloor(_this.mall.getDefaultFloorId());
         _this.renderer.setClearColor(_this.mall.theme.background);
         _scene.add(_this.mall.root);
+        _mapDiv.style.background = _this.mall.theme.background;
     }
 
     //reset the camera to default configuration
