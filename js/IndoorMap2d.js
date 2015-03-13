@@ -258,7 +258,7 @@ Canvas2DRenderer = function (mapDiv) {
             var scaleY = (_parentHeight - _padding) / height;
             _scale = scaleX < scaleY ? scaleX : scaleY;
             _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
-            _centerY = (object.rect.br[1] + object.rect.tl[1])/2;
+            _centerY = (-object.rect.br[1] - object.rect.tl[1])/2;
             _canvas.style.position = "absolute";
 
             left =  -_canvasWidthHalf +(_parentWidth/2) ;
@@ -285,9 +285,9 @@ Canvas2DRenderer = function (mapDiv) {
 
         var poly = _curFloor.Outline[0][0];
         _ctx.beginPath();
-        _ctx.moveTo(poly[0], poly[1]);
+        _ctx.moveTo(poly[0], -poly[1]);
         for(var i = 2; i < poly.length - 1; i+=2){
-            _ctx.lineTo(poly[i],poly[i+1]);
+            _ctx.lineTo(poly[i],-poly[i+1]);
         }
         _ctx.closePath();
         _ctx.strokeStyle = _curFloor.strokeColor;
@@ -305,9 +305,9 @@ Canvas2DRenderer = function (mapDiv) {
             }
             _ctx.beginPath();
 
-            _ctx.moveTo(poly[0], poly[1]);
+            _ctx.moveTo(poly[0], -poly[1]);
             for(var j = 2; j < poly.length - 1; j+=2){
-                _ctx.lineTo(poly[j],poly[j+1]);
+                _ctx.lineTo(poly[j],-poly[j+1]);
             }
             _ctx.closePath();
 
@@ -393,7 +393,7 @@ Canvas2DRenderer = function (mapDiv) {
     this.localToWorld = function(pt){
         var worldPoint = [0,0];
         worldPoint[0] = _canvasWidthHalf + (pt[0] - _centerX) * _scale;
-        worldPoint[1] = _canvasHeightHalf + (pt[1] - _centerY) * _scale;
+        worldPoint[1] = _canvasHeightHalf + (-pt[1] - _centerY) * _scale;
         return worldPoint;
     }
 
@@ -451,9 +451,9 @@ Canvas2DRenderer = function (mapDiv) {
             }
             _ctx.beginPath();
 
-            _ctx.moveTo(poly[0], poly[1]);
+            _ctx.moveTo(poly[0], -poly[1]);
             for (var j = 2; j < poly.length - 1; j += 2) {
-                _ctx.lineTo(poly[j], poly[j + 1]);
+                _ctx.lineTo(poly[j], -poly[j + 1]);
             }
             _ctx.closePath();
 
