@@ -146,7 +146,7 @@ IndoorMap2d = function(mapdiv){
 
         if(pos[0] == _controls.startPoint[0] && pos[1] == _controls.startPoint[1]) {
 
-            pos[0] -= 18;
+//            pos[0] -= 18;
 ///            pos[1] += 25;
             if (_selected) {
                 _selected.fillColor = _selectedOldColor;
@@ -229,7 +229,7 @@ Canvas2DRenderer = function (mapDiv) {
         _canvasHeight,
         _canvasWidthHalf,
         _canvasHeightHalf,
-        _padding = 30,
+        _padding = 50,
 
         _centerX = 0,
         _centerY = 0,
@@ -254,16 +254,16 @@ Canvas2DRenderer = function (mapDiv) {
         if(object._id != _oldId) {
             var width = object.rect.br[0] - object.rect.tl[0];
             var height = object.rect.br[1] - object.rect.tl[1];
-            var scaleX = _parentWidth / (width+_padding);
-            var scaleY = _parentHeight / (height+_padding);
+            var scaleX = (_parentWidth - _padding) / width;
+            var scaleY = (_parentHeight - _padding) / height;
             _scale = scaleX < scaleY ? scaleX : scaleY;
             _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
             _centerY = (object.rect.br[1] + object.rect.tl[1])/2;
             _canvas.style.position = "absolute";
 
-            left =  -_canvasWidthHalf +(_parentWidth/2 - _centerX*_scale) ;
+            left =  -_canvasWidthHalf +(_parentWidth/2) ;
             _canvas.style.left = left + "px";
-            top =  -_canvasHeightHalf +(_parentHeight/2 - _centerY*_scale) ;
+            top =  -_canvasHeightHalf +(_parentHeight/2) ;
             _canvas.style.top = top + "px";
 
         }
@@ -291,7 +291,7 @@ Canvas2DRenderer = function (mapDiv) {
         }
         _ctx.closePath();
         _ctx.strokeStyle = _curFloor.strokeColor;
-        _ctx.lineWidth = 1;
+        _ctx.lineWidth = 2;
         _ctx.stroke();
         _ctx.fillStyle = _curFloor.fillColor;
         _ctx.fill();
@@ -311,7 +311,7 @@ Canvas2DRenderer = function (mapDiv) {
             }
             _ctx.closePath();
 
-            _ctx.strokeStyle = funcArea.strokeColor;
+            _ctx.strokeStyle = mall.theme.strokeStyle.color;
             _ctx.lineWidth = 1;
             _ctx.stroke();
 
@@ -388,7 +388,6 @@ Canvas2DRenderer = function (mapDiv) {
 //        _ctx.fill();
 
 
-
     }
 
     this.localToWorld = function(pt){
@@ -404,8 +403,8 @@ Canvas2DRenderer = function (mapDiv) {
 //        _canvasPos[1] = -(_parentHeight/2 - point[1])/_scale + _centerY;
 
 
-        _canvasPos[0] = -_parentWidth/2 + point[0] + _centerX + _canvasWidthHalf - (parseInt(_canvas.style.left) - left);
-        _canvasPos[1] = -_parentHeight/2 + point[1] + _centerY + _canvasHeightHalf - (parseInt(_canvas.style.top) - top);
+        _canvasPos[0] = -_parentWidth/2 + point[0] + _canvasWidthHalf - (parseInt(_canvas.style.left) - left);
+        _canvasPos[1] = -_parentHeight/2 + point[1] + _canvasHeightHalf - (parseInt(_canvas.style.top) - top);
         return hitTest(_canvasPos);
     }
 
