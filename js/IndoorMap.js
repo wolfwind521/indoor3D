@@ -158,7 +158,7 @@ function Mall(){
 //----------------------------theme--------------------------------------
 var defaultTheme = {
     name: "test", //theme's name
-    background: "#e6e6e6", //background color
+    background: "#F2F2F2", //background color
 
     //building's style
     building: {
@@ -170,7 +170,7 @@ var defaultTheme = {
 
     //floor's style
     floor: {
-        color: "#c1c1c1",
+        color: "#E0E0E0",
         opacity: 1,
         transparent: false
     },
@@ -184,19 +184,19 @@ var defaultTheme = {
 
             case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
                 return {
-                    color: "#e6e6e6",
+                    color: "#F2F2F2",
                     opacity: 0.8,
                     transparent: true
                 }
             case "300": //closed area
                 return {
-                    color: "#9e9e9e",
+                    color: "#AAAAAA",
                     opacity: 0.7,
                     transparent: true
                 };
             case "400": //empty shop
                 return {
-                    color: "#E4E4E4",
+                    color: "#D3D3D3",
                     opacity: 0.7,
                     transparent: true
                 };
@@ -206,56 +206,56 @@ var defaultTheme = {
         switch(category) {
             case 101: //food
                 return {
-                    color: "#d8992c",
+                    color: "#748AA3",
                     opacity: 0.7,
                     transparent: true
                 };
             case 102: //retail
                 return {
-                    color: "#99455e",
+                    color: "#98B5BB",
                     opacity: 0.7,
                     transparent: true
                 };
             case 103: //toiletry
                 return {
-                    color: "#17566a",
+                    color: "#E49A57",
                     opacity: 0.7,
                     transparent: true
                 };
             case 104: //parent-child
                 return {
-                    color: "#17566a",
+                    color: "#EBC99C",
                     opacity: 0.7,
                     transparent: true
                 };
             case 105: //life services
                 return {
-                    color: "#e6a1d1",
+                    color: "#61A08D",
                     opacity: 0.7,
                     transparent: true
                 };
             case 106: //education
                 return {
-                    color: "#b9b3ff",
+                    color: "#AECDBA",
                     opacity: 0.7,
                     transparent: true
                 };
             case 107: //life style
                 return {
-                    color: "#d6675b",
+                    color: "#D56C6B",
                     opacity: 0.7,
                     transparent: true
                 };
             case 108: //entertainment
                 return {
-                    color: "#a1e5e6",
+                    color: "#FDA1A1",
                     opacity: 0.7,
                     transparent: true
                 };
             case 109: //others
             default :
                 return {
-                    color: "#d0641a",
+                    color: "#857990",
                     opacity: 0.7,
                     transparent: true
                 };
@@ -265,7 +265,7 @@ var defaultTheme = {
 
     //room wires' style
     strokeStyle: {
-        color: "#38291f",
+        color: "#5C4433",
         opacity: 0.5,
         transparent: true,
         linewidth: 1
@@ -274,7 +274,7 @@ var defaultTheme = {
     fontStyle:{
         color: "#231815",
         fontsize: 40,
-        fontface: "Microsoft YaHei"
+        fontface: "Helvetica, MicrosoftYaHei "
     },
 
     pubPointImg: {

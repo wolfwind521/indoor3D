@@ -146,8 +146,8 @@ IndoorMap2d = function(mapdiv){
 
         if(pos[0] == _controls.startPoint[0] && pos[1] == _controls.startPoint[1]) {
 
-            pos[0] -= 8;
-            pos[1] += 25;
+            pos[0] -= 18;
+///            pos[1] += 25;
             if (_selected) {
                 _selected.fillColor = _selectedOldColor;
             }
@@ -382,7 +382,10 @@ Canvas2DRenderer = function (mapDiv) {
         }
 //        //test: render the clicked point
 //        _ctx.fillStyle='#FF0000';
-//        _ctx.fillRect(_canvasPos[0], _canvasPos[1], 4, 4);
+//        _ctx.beginPath();
+//        _ctx.arc(_canvasPos[0], _canvasPos[1], 2, 0, Math.PI * 2, true);
+//        _ctx.closePath();
+//        _ctx.fill();
 
 
 
@@ -487,7 +490,7 @@ Canvas2DRenderer = function (mapDiv) {
         }
         var funcAreaJson = mall.getFloorJson(mall.getCurFloorId()).FuncAreas;
         var fontStyle = mall.theme.fontStyle;
-        _ctx.font =  "14px " + fontStyle.fontface;
+        _ctx.font =  "bold 14px " + fontStyle.fontface;
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};
             name.text = funcAreaJson[i].Name;
