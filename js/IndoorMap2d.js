@@ -145,11 +145,13 @@ IndoorMap2d = function(mapdiv){
         }
 
         if(pos[0] == _controls.startPoint[0] && pos[1] == _controls.startPoint[1]) {
+            pos[0] -= getElementLeft(_mapDiv);
+            pos[1] -= getElementTop(_mapDiv);
 
-//            pos[0] -= 18;
-///            pos[1] += 25;
+            //deselect the old one
             if (_selected) {
                 _selected.fillColor = _selectedOldColor;
+                redraw();
             }
 
             _selected = _this.renderer.onSelect(pos);
@@ -159,12 +161,13 @@ IndoorMap2d = function(mapdiv){
                 if (_selectionListener) {
                     _selectionListener(_selected._id);
                 }
+                redraw();
             } else {
                 if (_selectionListener) {
                     _selectionListener(-1);
                 }
             }
-            redraw();
+
         }
 
     }
@@ -249,6 +252,7 @@ Canvas2DRenderer = function (mapDiv) {
     var _curFloor = null;
 
     this.domElement = _canvas;
+    var _devicePixelRatio = window.devicePixelRatio;
 
     this.setDefaultView = function(object){
         if(object._id != _oldId) {
@@ -257,13 +261,14 @@ Canvas2DRenderer = function (mapDiv) {
             var scaleX = (_parentWidth - _padding) / width;
             var scaleY = (_parentHeight - _padding) / height;
             _scale = scaleX < scaleY ? scaleX : scaleY;
+            _scale *= _devicePixelRatio;
             _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
             _centerY = (-object.rect.br[1] - object.rect.tl[1])/2;
             _canvas.style.position = "absolute";
 
-            left =  -_canvasWidthHalf +(_parentWidth/2) ;
+            left =  -_canvasWidthHalf/_devicePixelRatio +(_parentWidth/2) ;
             _canvas.style.left = left + "px";
-            top =  -_canvasHeightHalf +(_parentHeight/2) ;
+            top =  -_canvasHeightHalf/_devicePixelRatio +(_parentHeight/2) ;
             _canvas.style.top = top + "px";
 
         }
@@ -403,8 +408,8 @@ Canvas2DRenderer = function (mapDiv) {
 //        _canvasPos[1] = -(_parentHeight/2 - point[1])/_scale + _centerY;
 
 
-        _canvasPos[0] = -_parentWidth/2 + point[0] + _canvasWidthHalf - (parseInt(_canvas.style.left) - left);
-        _canvasPos[1] = -_parentHeight/2 + point[1] + _canvasHeightHalf - (parseInt(_canvas.style.top) - top);
+        _canvasPos[0] = (-_parentWidth/2 + point[0] + _canvasWidthHalf/_devicePixelRatio - (parseInt(_canvas.style.left) - left))*_devicePixelRatio;
+        _canvasPos[1] = (-_parentHeight/2 + point[1] + _canvasHeightHalf/_devicePixelRatio - (parseInt(_canvas.style.top) - top))*_devicePixelRatio;
         return hitTest(_canvasPos);
     }
 
@@ -428,8 +433,10 @@ Canvas2DRenderer = function (mapDiv) {
     }
 
     this.setSize = function(width, height) {
-        _canvasWidth = width;
-        _canvasHeight = height;
+        _canvas.style.width = width + "px";
+        _canvas.style.height = height + "px";
+        _canvasWidth = width * _devicePixelRatio;
+        _canvasHeight = height * _devicePixelRatio;
         _canvas.width = _canvasWidth;
         _canvas.height = _canvasHeight;
         _canvasWidthHalf = Math.floor(_canvasWidth / 2);
@@ -438,8 +445,6 @@ Canvas2DRenderer = function (mapDiv) {
 
     function hitTest(point){
         _ctx.save();
-        _ctx.fillStyle = _clearColor;
-        _ctx.fillRect(0,0,_canvasWidth, _canvasHeight);
         _ctx.scale(_scale, _scale);
         _ctx.translate(_canvasWidthHalf/_scale-_centerX, _canvasHeightHalf/_scale - _centerY);
 
@@ -489,7 +494,7 @@ Canvas2DRenderer = function (mapDiv) {
         }
         var funcAreaJson = mall.getFloorJson(mall.getCurFloorId()).FuncAreas;
         var fontStyle = mall.theme.fontStyle;
-        _ctx.font =  "bold 14px " + fontStyle.fontface;
+        _ctx.font =  "bold "+ fontStyle.fontsize*_devicePixelRatio+"px " + fontStyle.fontface;
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};
             name.text = funcAreaJson[i].Name;

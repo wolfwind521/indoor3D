@@ -54,6 +54,25 @@ GeomUtility.getBoundingRect = function(points){
     return rect;
 }
 
+function getElementLeft(element) {
+    var actualLeft = element.offsetLeft;
+    var current = element.offsetParent;
+    while (current !== null) {
+        actualLeft += current.offsetLeft;
+        current = current.offsetParent;
+    }
+    return actualLeft;
+}
+function getElementTop(element) {
+
+    var actualTop = element.offsetTop;
+    var current = element.offsetParent;
+    while (current !== null) {
+        actualTop += current.offsetTop;
+        current = current.offsetParent;
+    }
+    return actualTop;
+}
 //---------------------the Mall class--------------------
 function Mall(){
     var _this = this;
@@ -206,56 +225,56 @@ var defaultTheme = {
         switch(category) {
             case 101: //food
                 return {
-                    color: "#748AA3",
+                    color: "#2F5987",
                     opacity: 0.7,
                     transparent: true
                 };
             case 102: //retail
                 return {
-                    color: "#98B5BB",
+                    color: "#6AB0BA",
                     opacity: 0.7,
                     transparent: true
                 };
             case 103: //toiletry
                 return {
-                    color: "#E49A57",
+                    color: "#FF9230",
                     opacity: 0.7,
                     transparent: true
                 };
             case 104: //parent-child
                 return {
-                    color: "#EBC99C",
+                    color: "#FCC57C",
                     opacity: 0.7,
                     transparent: true
                 };
             case 105: //life services
                 return {
-                    color: "#61A08D",
+                    color: "#16AA7E",
                     opacity: 0.7,
                     transparent: true
                 };
             case 106: //education
                 return {
-                    color: "#AECDBA",
+                    color: "#97D3AF",
                     opacity: 0.7,
                     transparent: true
                 };
             case 107: //life style
                 return {
-                    color: "#D56C6B",
+                    color: "#AF1917",
                     opacity: 0.7,
                     transparent: true
                 };
             case 108: //entertainment
                 return {
-                    color: "#FDA1A1",
+                    color: "#F54A4A",
                     opacity: 0.7,
                     transparent: true
                 };
             case 109: //others
             default :
                 return {
-                    color: "#857990",
+                    color: "#7E5D9A",
                     opacity: 0.7,
                     transparent: true
                 };
@@ -273,7 +292,7 @@ var defaultTheme = {
 
     fontStyle:{
         color: "#231815",
-        fontsize: 40,
+        fontsize: 14,
         fontface: "Helvetica, MicrosoftYaHei "
     },
 
