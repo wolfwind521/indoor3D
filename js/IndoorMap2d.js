@@ -334,6 +334,12 @@ Canvas2DRenderer = function (mapDiv) {
             var textRects = [];
             for(var i = 0 ; i < funcAreas.length; i++){
                 var nameText = _nameTexts[i];
+
+//                if(nameText.text == undefined){
+//                    nameText.visible = false;
+//                    continue;
+//                }
+
                 var center = funcAreas[i].Center;
                 center = _this.localToWorld(center);
 
@@ -452,6 +458,10 @@ Canvas2DRenderer = function (mapDiv) {
 
         for(var i = 0 ; i < _curFloor.FuncAreas.length; i++) {
             var funcArea = _curFloor.FuncAreas[i];
+            if(funcArea.Category == undefined && funcArea.Type == 100){ //hollow area
+                continue;
+            }
+
             var poly = funcArea.Outline[0][0];
             if (poly.length < 6) { //less than 3 points, return
                 return;
@@ -499,10 +509,18 @@ Canvas2DRenderer = function (mapDiv) {
         _ctx.font =  "bold "+ fontStyle.fontsize * _devicePixelRatio + "px " + fontStyle.fontface;
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};
-            name.text = funcAreaJson[i].Name;
-            name.halfWidth = _ctx.measureText(name.text).width/2;
-            name.halfHeight = fontStyle.fontsize * _devicePixelRatio/4;
-            name.visible = true;
+            var funcArea = funcAreaJson[i];
+            if(funcArea.Category == undefined && ((funcArea.Type == "100") || (funcArea.Type == 300))){
+                name.text = "";
+                name.halfWidth = 0;
+                name.halfHeight = 0;
+                name.visible = false;
+            }else {
+                name.text = funcAreaJson[i].Name;
+                name.halfWidth = _ctx.measureText(name.text).width / 2;
+                name.halfHeight = fontStyle.fontsize * _devicePixelRatio / 4;
+                name.visible = true;
+            }
 
             _nameTexts.push(name);
         }

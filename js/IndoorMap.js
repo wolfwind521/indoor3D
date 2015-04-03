@@ -351,31 +351,30 @@ var default2dTheme = {
     //rooms' style
     room: function (type, category) {
         var roomStyle;
-        switch (type) {
+        if(category == undefined) {
+            switch (type) {
 
-            case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
-                roomStyle = {
-                    color: "#F2F2F2",
-                    opacity: 0.8,
-                    transparent: true
-                }
-                break;
-            case "300": //closed area
-                roomStyle =  {
-                    color: "#AAAAAA",
-                    opacity: 0.7,
-                    transparent: true
-                };
-                break;
-            case "400": //empty shop
-                roomStyle = {
-                    color: "#D3D3D3",
-                    opacity: 0.7,
-                    transparent: true
-                };
-                break;
-            default :
-                break;
+                case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
+                    return {
+                        color: "#F2F2F2",
+                        opacity: 0.8,
+                        transparent: true
+                    }
+                case "300": //closed area
+                    return {
+                        color: "#AAAAAA",
+                        opacity: 0.7,
+                        transparent: true
+                    };
+                case "400": //empty shop
+                    return {
+                        color: "#D3D3D3",
+                        opacity: 0.7,
+                        transparent: true
+                    };
+                default :
+                    break;
+            }
         }
 
         switch(category) {
@@ -458,7 +457,7 @@ var default2dTheme = {
     fontStyle:{
         color: "#231815",
         fontsize: 14,
-        fontface: "Helvetica, MicrosoftYaHei "
+        fontface: "'Lantinghei SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Helvetica Neue', Helvetica, Arial, sans-serif  "
     },
 
     pubPointImg: {
