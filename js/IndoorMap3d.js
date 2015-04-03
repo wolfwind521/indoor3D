@@ -202,6 +202,7 @@ IndoorMap3d = function(mapdiv){
     function select(obj){
         obj.currentHex = _selected.material.color.getHex();
         obj.material.color = new THREE.Color(_this.mall.theme.selected);
+        obj.scale = new THREE.Vector3(2,2,2);
     }
 
     function onSelectObject(event) {
@@ -395,7 +396,7 @@ IndoorMap3d = function(mapdiv){
         }
         var funcAreaJson = _this.mall.getFloorJson(_this.mall.getCurFloorId()).FuncAreas;
         for(var i = 0 ; i < funcAreaJson.length; i++){
-            var sprite = makeTextSprite(funcAreaJson[i].Name, _this.mall.theme.fontStyle);
+            var sprite = makeTextSprite(funcAreaJson[i].Name_en, _this.mall.theme.fontStyle);
             sprite.oriX = funcAreaJson[i].Center[0];
             sprite.oriY = funcAreaJson[i].Center[1];
             _nameSprites.add(sprite);

@@ -296,12 +296,14 @@ Canvas2DRenderer = function (mapDiv) {
         }
         _ctx.closePath();
         _ctx.strokeStyle = _curFloor.strokeColor;
-        _ctx.lineWidth = 2;
+        _ctx.lineWidth = (2*_devicePixelRatio/_scale) >> 0;
         _ctx.stroke();
         _ctx.fillStyle = _curFloor.fillColor;
         _ctx.fill();
 
         var funcAreas = _curFloor.FuncAreas;
+        _ctx.strokeStyle = mall.theme.strokeStyle.color;
+        _ctx.lineWidth = (mall.theme.strokeStyle.linewidth * _devicePixelRatio/ _scale) >> 0;
         for(var i = 0 ; i < funcAreas.length; i++){
             var funcArea = funcAreas[i];
             var poly = funcArea.Outline[0][0];
@@ -316,8 +318,7 @@ Canvas2DRenderer = function (mapDiv) {
             }
             _ctx.closePath();
 
-            _ctx.strokeStyle = mall.theme.strokeStyle.color;
-            _ctx.lineWidth = 1;
+
             _ctx.stroke();
 
             _ctx.fillStyle = funcArea.fillColor;
@@ -361,7 +362,8 @@ Canvas2DRenderer = function (mapDiv) {
 
         if(_showPubPoints){
             var pubPoints = _curFloor.PubPoint;
-            var imgWidthHalf = 15, imgHeightHalf = 15;
+            var imgWidth = 25 * _devicePixelRatio, imgHeight = 25 *_devicePixelRatio;
+            var imgWidthHalf = imgWidth/2, imgHeightHalf = imgHeight/2;
             var pubPointRects = [];
             for(var i = 0; i < pubPoints.length; i++){
                 var pubPoint = pubPoints[i];
@@ -380,7 +382,7 @@ Canvas2DRenderer = function (mapDiv) {
                 if(pubPoint.visible) {
                     var image = _sprites[pubPoints[i].Type];
                     if (image !== undefined) {
-                        _ctx.drawImage(image, (center[0] - imgWidthHalf) >> 0, (center[1] - imgHeightHalf) >> 0);
+                        _ctx.drawImage(image, (center[0] - imgWidthHalf) >> 0, (center[1] - imgHeightHalf) >> 0, imgWidth, imgHeight);
                     }
                 }
             }
@@ -494,19 +496,20 @@ Canvas2DRenderer = function (mapDiv) {
         }
         var funcAreaJson = mall.getFloorJson(mall.getCurFloorId()).FuncAreas;
         var fontStyle = mall.theme.fontStyle;
-        _ctx.font =  "bold "+ fontStyle.fontsize*_devicePixelRatio+"px " + fontStyle.fontface;
+        _ctx.font =  "bold "+ fontStyle.fontsize * _devicePixelRatio + "px " + fontStyle.fontface;
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};
             name.text = funcAreaJson[i].Name;
             name.halfWidth = _ctx.measureText(name.text).width/2;
-            name.halfHeight = fontStyle.fontsize/4;
+            name.halfHeight = fontStyle.fontsize * _devicePixelRatio/4;
             name.visible = true;
 
             _nameTexts.push(name);
         }
     }
 
-    _this.setSize(2000, 2000);
+
+    _this.setSize(2000*_devicePixelRatio, 2000*_devicePixelRatio);
 }
 
 //---------------------Controller2D class-----------------

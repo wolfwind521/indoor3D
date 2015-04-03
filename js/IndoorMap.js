@@ -79,7 +79,7 @@ function Mall(){
     this.floors = [];   //the floors
     this.building = null; //the building
     this.root = null; //the root scene
-    this.theme = defaultTheme; //theme
+    this.theme = null; //theme
     this.is3d = true;
     this.jsonData = null;
 
@@ -165,6 +165,11 @@ function Mall(){
         var offset = 4;
         for(var i=0; i<_this.floors.length; i++){
             _this.floors[i].position.set(0,0,i*_this.floors[i].height*offset);
+//            if(i == 4){
+//                _this.floors[i].position.set(0,-300,i*_this.floors[i].height*offset);
+//            }else{
+//
+//            }
             _this.root.add(this.floors[i]);
         }
         this.building.scale.set(1,1,offset);
@@ -175,7 +180,7 @@ function Mall(){
     }
 }
 //----------------------------theme--------------------------------------
-var defaultTheme = {
+var default3dTheme = {
     name: "test", //theme's name
     background: "#F2F2F2", //background color
 
@@ -199,87 +204,101 @@ var defaultTheme = {
 
     //rooms' style
     room: function (type, category) {
+        var roomStyle;
         switch (type) {
 
             case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
-                return {
+                roomStyle = {
                     color: "#F2F2F2",
                     opacity: 0.8,
                     transparent: true
                 }
+                break;
             case "300": //closed area
-                return {
+                roomStyle =  {
                     color: "#AAAAAA",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case "400": //empty shop
-                return {
+                roomStyle = {
                     color: "#D3D3D3",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             default :
+                break;
         }
 
         switch(category) {
             case 101: //food
-                return {
+                roomStyle = {
                     color: "#2F5987",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 102: //retail
-                return {
+                roomStyle = {
                     color: "#6AB0BA",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 103: //toiletry
-                return {
+                roomStyle = {
                     color: "#FF9230",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 104: //parent-child
-                return {
+                roomStyle = {
                     color: "#FCC57C",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 105: //life services
-                return {
+                roomStyle = {
                     color: "#16AA7E",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 106: //education
                 return {
                     color: "#97D3AF",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 107: //life style
-                return {
+                roomStyle = {
                     color: "#AF1917",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 108: //entertainment
-                return {
+                roomStyle = {
                     color: "#F54A4A",
                     opacity: 0.7,
                     transparent: true
                 };
+                break;
             case 109: //others
             default :
-                return {
+                roomStyle = {
                     color: "#7E5D9A",
                     opacity: 0.7,
                     transparent: true
                 };
-
+                break;
         }
+        return roomStyle;
     },
 
     //room wires' style
@@ -287,7 +306,153 @@ var defaultTheme = {
         color: "#5C4433",
         opacity: 0.5,
         transparent: true,
-        linewidth: 1
+        linewidth: 2
+    },
+
+    fontStyle:{
+        color: "#231815",
+        fontsize: 40,
+        fontface: "Helvetica, MicrosoftYaHei "
+    },
+
+    pubPointImg: {
+
+        "11001": System.imgPath+"/toilet.png",
+        "11002": System.imgPath+"/ATM.png",
+        "21001": System.imgPath+"/stair.png",
+        "22006": System.imgPath+"/entry.png",
+        "21002": System.imgPath+"/escalator.png",
+        "21003": System.imgPath+"/lift.png"
+    }
+}
+
+var default2dTheme = {
+    name: "test", //theme's name
+    background: "#F2F2F2", //background color
+
+    //building's style
+    building: {
+        color: "#000000",
+        opacity: 0.1,
+        transparent: true,
+        depthTest: false
+    },
+
+    //floor's style
+    floor: {
+        color: "#E0E0E0",
+        opacity: 1,
+        transparent: false
+    },
+
+    //selected room's style
+    selected: "#ffff55",
+
+    //rooms' style
+    room: function (type, category) {
+        var roomStyle;
+        switch (type) {
+
+            case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
+                roomStyle = {
+                    color: "#F2F2F2",
+                    opacity: 0.8,
+                    transparent: true
+                }
+                break;
+            case "300": //closed area
+                roomStyle =  {
+                    color: "#AAAAAA",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case "400": //empty shop
+                roomStyle = {
+                    color: "#D3D3D3",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            default :
+                break;
+        }
+
+        switch(category) {
+            case 101: //food
+                roomStyle = {
+                    color: "#2F5987",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 102: //retail
+                roomStyle = {
+                    color: "#6AB0BA",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 103: //toiletry
+                roomStyle = {
+                    color: "#FF9230",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 104: //parent-child
+                roomStyle = {
+                    color: "#FCC57C",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 105: //life services
+                roomStyle = {
+                    color: "#16AA7E",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 106: //education
+                return {
+                    color: "#97D3AF",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 107: //life style
+                roomStyle = {
+                    color: "#AF1917",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 108: //entertainment
+                roomStyle = {
+                    color: "#F54A4A",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+            case 109: //others
+            default :
+                roomStyle = {
+                    color: "#7E5D9A",
+                    opacity: 0.7,
+                    transparent: true
+                };
+                break;
+        }
+        return roomStyle;
+    },
+
+    //room wires' style
+    strokeStyle: {
+        color: "#5C4433",
+        opacity: 0.5,
+        transparent: true,
+        linewidth: 2
     },
 
     fontStyle:{
@@ -306,6 +471,8 @@ var defaultTheme = {
         "21003": System.imgPath+"/lift.png"
     }
 }
+
+
 //----------------------------the Loader class --------------------------
 IndoorMapLoader= function ( is3d ) {
     THREE.Loader.call( this, is3d );
@@ -407,6 +574,11 @@ function ParseModel(json, is3d){
 
         mall.jsonData = json;
         mall.is3d = is3d;
+        if(is3d){
+            mall.theme = default3dTheme;
+        }else{
+            mall.theme = default2dTheme;
+        }
 
         var building,shape, extrudeSettings, geometry, material, mesh, wire, points;
         var scale = 0.1, floorHeight, buildingHeight = 0;
