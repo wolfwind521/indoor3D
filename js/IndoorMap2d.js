@@ -16,6 +16,7 @@ IndoorMap2d = function(mapdiv){
     var _selected, _selectedOldColor;
     this.renderer = null;
     this.is3d = false;
+    var _marker;
 
     this.init = function(){
         _this.renderer = new Canvas2DRenderer(_mapDiv);
@@ -115,6 +116,9 @@ IndoorMap2d = function(mapdiv){
         redraw();
     }
 
+    this.setSelectionMarker = function(marker){
+        _marker = marker;
+    }
 
     //set if the objects are selectable
     this.setSelectable = function (selectable) {
@@ -129,8 +133,14 @@ IndoorMap2d = function(mapdiv){
 
     //select object(just hight light it)
     function select(obj){
-        _selectedOldColor = obj.fillColor;
-        obj.fillColor = _this.mall.theme.selected;
+        if(obj != undefined) {
+            _selectedOldColor = obj.fillColor;
+            obj.fillColor = _this.mall.theme.selected;
+            pos = _this.renderer.localToWorld(obj.Center);
+            _marker.style.left = pos[0] - _marker.width / 2;
+            _marker.style.top = pos[1] - _marker.height / 2;
+            _marker.style.visibility = true;
+        }
     }
 
     function onSelectObject(event){
@@ -169,7 +179,6 @@ IndoorMap2d = function(mapdiv){
             }
 
         }
-
     }
 
     function redraw(){
@@ -252,8 +261,9 @@ Canvas2DRenderer = function (mapDiv) {
     var _curFloor = null;
 
     this.domElement = _canvas;
-    var _devicePixelRatio = window.devicePixelRatio;
+    //var _devicePixelRatio = window.devicePixelRatio;
 
+    var _devicePixelRatio = 1;
     this.setDefaultView = function(object){
         if(object._id != _oldId) {
             var width = object.rect.br[0] - object.rect.tl[0];

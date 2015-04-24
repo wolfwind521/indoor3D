@@ -749,6 +749,15 @@ var IndoorMap = function (params) {
             _this.is3d = false;
         }
 
+        var marker = document.createElement("image");
+        marker.style.position = "absolute";
+        marker.style.src = System.imgPath+"/marker.png";
+        marker.visibility = false;
+        marker.style.width = "39px";
+        marker.style.height = "54px";
+        document.body.appendChild(marker);
+        _indoorMap.setSelectionMarker(marker);
+
 
     }
 
