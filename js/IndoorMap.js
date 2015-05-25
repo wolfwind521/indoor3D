@@ -756,7 +756,7 @@ var IndoorMap = function (params) {
         marker.style.width = "39px";
         marker.style.height = "54px";
         document.body.appendChild(marker);
-        _indoorMap.setSelectionMarker(marker);
+        //_indoorMap.setSelectionMarker(marker);
 
 
     }
