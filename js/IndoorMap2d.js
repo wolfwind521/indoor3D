@@ -261,9 +261,9 @@ Canvas2DRenderer = function (mapDiv) {
     var _curFloor = null;
 
     this.domElement = _canvas;
-    //var _devicePixelRatio = window.devicePixelRatio;
+    var _devicePixelRatio = window.devicePixelRatio;
 
-    var _devicePixelRatio = 2;
+    //var _devicePixelRatio = 2;
     this.setDefaultView = function(object){
         if(object._id != _oldId) {
             var width = object.rect.br[0] - object.rect.tl[0];
@@ -288,6 +288,8 @@ Canvas2DRenderer = function (mapDiv) {
             return;
         }
 
+        var theme = mall.theme;
+
         //get render data
         _curFloor = mall.getCurFloor();
 
@@ -306,14 +308,14 @@ Canvas2DRenderer = function (mapDiv) {
         }
         _ctx.closePath();
         _ctx.strokeStyle = _curFloor.strokeColor;
-        _ctx.lineWidth = (2*_devicePixelRatio/_scale) >> 0;
+        _ctx.lineWidth = (theme.strokeStyle.linewidth*_devicePixelRatio/_scale) >> 0;
         _ctx.stroke();
         _ctx.fillStyle = _curFloor.fillColor;
         _ctx.fill();
 
         var funcAreas = _curFloor.FuncAreas;
-        _ctx.strokeStyle = mall.theme.strokeStyle.color;
-        _ctx.lineWidth = (mall.theme.strokeStyle.linewidth * _devicePixelRatio/ _scale) >> 0;
+        _ctx.strokeStyle = theme.strokeStyle.color;
+        _ctx.lineWidth = (theme.strokeStyle.linewidth * _devicePixelRatio/ _scale) >> 0;
         for(var i = 0 ; i < funcAreas.length; i++){
             var funcArea = funcAreas[i];
             var poly = funcArea.Outline[0][0];
@@ -328,7 +330,7 @@ Canvas2DRenderer = function (mapDiv) {
             }
             _ctx.closePath();
 
-
+            _ctx.strokeStyle = theme.strokeStyle.color;
             _ctx.stroke();
 
             _ctx.fillStyle = funcArea.fillColor;
@@ -340,7 +342,7 @@ Canvas2DRenderer = function (mapDiv) {
         if(_showNames){
 
             _ctx.textBaseline="middle";
-            _ctx.fillStyle = mall.theme.fontStyle.color;
+            _ctx.fillStyle = theme.fontStyle.color;
             var textRects = [];
             for(var i = 0 ; i < funcAreas.length; i++){
                 var nameText = _nameTexts[i];
@@ -537,7 +539,8 @@ Canvas2DRenderer = function (mapDiv) {
     }
 
 
-    _this.setSize(2000*_devicePixelRatio, 2000*_devicePixelRatio);
+    var size = 2000 * (_devicePixelRatio > 2? 2 : _devicePixelRatio);
+    _this.setSize(2000, 2000);
 }
 
 //---------------------Controller2D class-----------------
@@ -559,6 +562,7 @@ Controller2D = function(domElement){
         _this.endPoint = [0,0];
     }
     function touchStart(event){
+        event.preventDefault();
         _this.startPoint[0] = event.touches[0].clientX;
         _this.startPoint[1] = event.touches[0].clientY;
 
@@ -571,6 +575,7 @@ Controller2D = function(domElement){
     }
 
     function mouseDown(event){
+        event.preventDefault();
         _this.startPoint[0] = event.clientX;
         _this.startPoint[1] = event.clientY;
 
