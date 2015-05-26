@@ -16,7 +16,7 @@ IndoorMap2d = function(mapdiv){
     var _selected, _selectedOldColor;
     this.renderer = null;
     this.is3d = false;
-    var _marker;
+    //var _marker;
 
     this.init = function(){
         _this.renderer = new Canvas2DRenderer(_mapDiv);
@@ -117,7 +117,7 @@ IndoorMap2d = function(mapdiv){
     }
 
     this.setSelectionMarker = function(marker){
-        _marker = marker;
+        //_marker = marker;
     }
 
     //set if the objects are selectable
@@ -137,9 +137,9 @@ IndoorMap2d = function(mapdiv){
             _selectedOldColor = obj.fillColor;
             obj.fillColor = _this.mall.theme.selected;
             pos = _this.renderer.localToWorld(obj.Center);
-            _marker.style.left = pos[0] - _marker.width / 2;
-            _marker.style.top = pos[1] - _marker.height / 2;
-            _marker.style.visibility = true;
+//            _marker.style.left = pos[0] - _marker.width / 2;
+//            _marker.style.top = pos[1] - _marker.height / 2;
+//            _marker.style.visibility = true;
         }
     }
 
@@ -259,6 +259,8 @@ Canvas2DRenderer = function (mapDiv) {
     left,
     top;
     var _curFloor = null;
+    var _objSize = [0,0];
+    var MAX_CANVAS_SIZE = 2500;
 
     this.domElement = _canvas;
     var _devicePixelRatio = window.devicePixelRatio;
@@ -270,6 +272,8 @@ Canvas2DRenderer = function (mapDiv) {
             var height = object.rect.br[1] - object.rect.tl[1];
             var scaleX = (_parentWidth - _padding) / width;
             var scaleY = (_parentHeight - _padding) / height;
+            _objSize[0] = width;
+            _objSize[1] = height;
             _scale = scaleX < scaleY ? scaleX : scaleY;
             _scale *= _devicePixelRatio;
             _centerX = (object.rect.br[0] + object.rect.tl[0])/2;
@@ -442,6 +446,9 @@ Canvas2DRenderer = function (mapDiv) {
         if(zoomScale === undefined){
             zoomScale = 0.8;
         }
+        if(exceed(_scale/zoomScale)){
+            return;
+        }
         _scale /= zoomScale;
     }
 
@@ -461,6 +468,17 @@ Canvas2DRenderer = function (mapDiv) {
         _canvas.height = _canvasHeight;
         _canvasWidthHalf = Math.floor(_canvasWidth / 2);
         _canvasHeightHalf = Math.floor(_canvasHeight / 2);
+    }
+
+    function exceed(scale){
+        var curWidth = _objSize[0] * scale;
+        var curHeight = _objSize[1] * scale;
+        var maxSize = MAX_CANVAS_SIZE * _devicePixelRatio;
+        if(curWidth > maxSize || curHeight > maxSize){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     function hitTest(point){
@@ -538,9 +556,7 @@ Canvas2DRenderer = function (mapDiv) {
         }
     }
 
-
-    var size = 2000 * (_devicePixelRatio > 2? 2 : _devicePixelRatio);
-    _this.setSize(2000, 2000);
+    _this.setSize(MAX_CANVAS_SIZE, MAX_CANVAS_SIZE);
 }
 
 //---------------------Controller2D class-----------------
@@ -563,8 +579,15 @@ Controller2D = function(domElement){
     }
     function touchStart(event){
         event.preventDefault();
-        _this.startPoint[0] = event.touches[0].clientX;
-        _this.startPoint[1] = event.touches[0].clientY;
+
+        var touches = event.touches;
+        if(touches.length == 1){
+            _this.startPoint[0] = touches[0].clientX;
+            _this.startPoint[1] = touches[0].clientY;
+        }else if( touches.length == 2){
+            _this.startPoint[0] = touches[1].clientX - touches[0].clientX;
+            _this.startPoint[1] = touches[1].clientY - touches[0].clientY;
+        }
 
         document.addEventListener('touchend', touchEnd, false);
         document.addEventListener('touchmove', touchMove, false);
