@@ -699,6 +699,7 @@ function ParseModel(json, is3d){
             //building geometry
             building = json.data.building;
             points = parsePoints(building.Outline[0][0]);
+            mall.FrontAngle = building.FrontAngle;
 
             if (points.length > 0) {
                 shape = new THREE.Shape(points);

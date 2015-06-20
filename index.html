@@ -25,8 +25,7 @@
 
     var params = {
 //        mapDiv:"indoor3d"
-//        ,
-        dim:"2d"
+//        ,        dim:"2d"
     }
     var indoorMap = IndoorMap(params);
 
@@ -35,8 +34,7 @@
     var loader = new IndoorMapLoader(indoorMap.is3d);
     loader.load('data/爱琴海购物中心.json', function(mall){
         testjson = mall.jsonData;
-        indoorMap.parse(testjson);
-        indoorMap.setSelectable(true);
+        indoorMap.parse(testjson).setSelectable(true).showAreaNames(false);
 
         var ul = IndoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
@@ -59,10 +57,10 @@
 </script>
 <!-- buttons just for test-->
 <ul class="testButton">
-    <li onclick="indoorMap.zoomIn(0.8)">放大</li>
-    <li onclick="indoorMap.zoomOut(0.8)">缩小</li>
-    <li onclick="indoorMap.setTopView()">顶视图</li>
-    <li onclick="indoorMap.setDefaultView()">默认透视图</li>
+    <li onclick="indoorMap.zoomIn(0.8)">+</li>
+    <li onclick="indoorMap.zoomOut(0.8)">-</li>
+    <li onclick="indoorMap.setTopView()">Top View</li>
+    <li onclick="indoorMap.setDefaultView()">Default View</li>
 
 </ul>
 </body>

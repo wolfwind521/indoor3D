@@ -90,20 +90,28 @@ IndoorMap3d = function(mapdiv){
         _this.renderer.setClearColor(_this.mall.theme.background);
         _scene.add(_this.mall.root);
         _mapDiv.style.background = _this.mall.theme.background;
+        return _this;
     }
 
     //reset the camera to default configuration
     this.setDefaultView = function () {
-        _this.camera.position.set(0, 600, 400);//TODO: adjust the position automatically
+
+        var camAngle = _this.mall.FrontAngle + Math.PI/2;
+        var camDir = [Math.cos(camAngle), Math.sin(camAngle)];
+        var camLen = 500;
+        var tiltAngle = 75.0 * Math.PI/180.0;
+        _this.camera.position.set(camDir[1]*camLen, Math.sin(tiltAngle) * camLen, camDir[0]*camLen);//TODO: adjust the position automatically
         _this.camera.lookAt(_scene.position);
 
         _controls.reset();
         _controls.viewChanged = true;
+        return _this;
     }
 
     //set top view
     this.setTopView = function(){
         _this.camera.position.set(0, 500, 0);
+        return _this;
     }
 
     //TODO:adjust camera to fit the building
@@ -137,6 +145,7 @@ IndoorMap3d = function(mapdiv){
             createNameSprites(floorid);
         }
         redraw();
+        return _this;
     }
 
     //show all floors
@@ -149,7 +158,7 @@ IndoorMap3d = function(mapdiv){
         _this.adjustCamera();
         clearPubPointSprites();
         clearNameSprites();
-
+        return _this;
     }
 
     //set if the objects are selectable
@@ -163,16 +172,19 @@ IndoorMap3d = function(mapdiv){
             _mapDiv.removeEventListener('mousedown', onSelectObject, false);
             _mapDiv.removeEventListener('touchstart', onSelectObject, false);
         }
+        return _this;
     }
 
     //show the labels
     this.showAreaNames = function(show) {
         _showNames = show == undefined ? true : show;
+        return _this;
     }
 
     //show pubPoints(entries, ATM, escalator...)
     this.showPubPoints = function(show){
         _showPubPoints = show == undefined ? true: show;
+        return _this;
     }
 
     //get the selected object
@@ -183,6 +195,7 @@ IndoorMap3d = function(mapdiv){
     //the callback function when sth is selected
     this.setSelectionListener = function(callback){
         _selectionListener = callback;
+        return _this;
     }
 
     //select object by id
