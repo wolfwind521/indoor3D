@@ -37,6 +37,7 @@ IndoorMap2d = function(mapdiv){
         _this.showFloor(_this.mall.getDefaultFloorId());
         _this.renderer.setClearColor(_this.mall.theme.background);
         _mapDiv.style.background = _this.mall.theme.background;
+        return _this;
     }
 
     //reset the camera to default configuration
@@ -65,11 +66,13 @@ IndoorMap2d = function(mapdiv){
 
     this.showAreaNames = function(show) {
         _showNames = show == undefined ? true : show;
+        return _this;
     }
 
     //show pubPoints(entries, ATM, escalator...)
     this.showPubPoints = function(show){
         _showPubPoints = show == undefined ? true: show;
+        return _this;
     }
 
     //get the selected object
@@ -80,6 +83,7 @@ IndoorMap2d = function(mapdiv){
     //the callback function when sth is selected
     this.setSelectionListener = function(callback){
         _selectionListener = callback;
+        return _this;
     }
 
     //select object by id
@@ -114,6 +118,7 @@ IndoorMap2d = function(mapdiv){
         }
 
         redraw();
+        return _this;
     }
 
     this.setSelectionMarker = function(marker){
@@ -129,6 +134,7 @@ IndoorMap2d = function(mapdiv){
             _mapDiv.removeEventListener('mouseup', onSelectObject, false);
             _mapDiv.removeEventListener('touchend', onSelectObject, false);
         }
+        return _this;
     }
 
     //select object(just hight light it)
@@ -260,12 +266,11 @@ Canvas2DRenderer = function (mapDiv) {
     top;
     var _curFloor = null;
     var _objSize = [0,0];
-    var MAX_CANVAS_SIZE = 2500;
+    var MAX_CANVAS_SIZE = 2000;
 
     this.domElement = _canvas;
-    var _devicePixelRatio = window.devicePixelRatio;
-
-    //var _devicePixelRatio = 2;
+    //var _devicePixelRatio = window.devicePixelRatio;
+    var _devicePixelRatio = 1;
     this.setDefaultView = function(object){
         if(object._id != _oldId) {
             var width = object.rect.br[0] - object.rect.tl[0];
@@ -584,9 +589,13 @@ Controller2D = function(domElement){
         if(touches.length == 1){
             _this.startPoint[0] = touches[0].clientX;
             _this.startPoint[1] = touches[0].clientY;
-        }else if( touches.length == 2){
-            _this.startPoint[0] = touches[1].clientX - touches[0].clientX;
-            _this.startPoint[1] = touches[1].clientY - touches[0].clientY;
+        }
+//        else if( touches.length == 2){
+//            _this.startPoint[0] = touches[1].clientX - touches[0].clientX;
+//            _this.startPoint[1] = touches[1].clientY - touches[0].clientY;
+//        }
+        else{
+            return;
         }
 
         document.addEventListener('touchend', touchEnd, false);
@@ -614,8 +623,13 @@ Controller2D = function(domElement){
         event.preventDefault();
         event.stopPropagation();
 
-        _this.endPoint[0] = event.touches[0].clientX;
-        _this.endPoint[1] = event.touches[0].clientY;
+        var touches = event.touches;
+        if(touches.length == 1) {
+            _this.endPoint[0] = touches[0].clientX;
+            _this.endPoint[1] = touches[0].clientY;
+        }else {
+            return;
+        }
 
         var subVector = [_this.endPoint[0]-_this.startPoint[0], _this.endPoint[1]-_this.startPoint[1]];
 
