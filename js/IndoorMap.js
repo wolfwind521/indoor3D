@@ -110,6 +110,12 @@ function Mall(){
 
     var _curFloorId;
 
+    //get building id
+    this.getBuildingId = function(){
+        var mallid = _this.jsonData.data.building.Mall;
+        return mallid? mallid : -1;
+    }
+
     //get default floor id
     this.getDefaultFloorId = function(){
         return _this.jsonData.data.building.DefaultFloor;

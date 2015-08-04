@@ -4,7 +4,7 @@
 
 IndoorMap3d = function(mapdiv){
     var _this = this;
-
+    var _theme;
     var _mapDiv = mapdiv,
         _canvasWidth = _mapDiv.clientWidth,
         _canvasWidthHalf = _canvasWidth / 2,
@@ -60,6 +60,15 @@ IndoorMap3d = function(mapdiv){
         _mapDiv.style.overflow = "hidden";
         _canvasDiv.style.width = "100%";
         _canvasDiv.style.height = "100%";
+    }
+
+    this.setTheme = function(theme){
+        _theme = theme;
+        return this;
+    }
+
+    this.theme = function(){
+        return _theme;
     }
 
     //load the map by the json file name
