@@ -35,9 +35,74 @@ System.imgPath = System.libPath+"/img";
     };
 }());
 
-//---------------------the GeomUtility class--------------------
-function GeomUtility(){}
+//IDM namespace
+var IDM = {}
+IDM.Browser = {};
+//Browser detection
+(function() {
+    var a = "ActiveXObject" in window,
+        c = a && !document.addEventListener,
+        e = navigator.userAgent.toLowerCase(),
+        f = -1 !== e.indexOf("webkit"),
+        m = -1 !== e.indexOf("chrome"),
+        p = -1 !== e.indexOf("phantom"),
+        isAndroid = -1 !== e.indexOf("android"),
+        r = -1 !== e.search("android [23]"),
+        gecko = -1 !== e.indexOf("gecko"),
+        isIphone = -1 !== e.indexOf("iphone"),
+        isSymbianOS = -1 !== e.indexOf("symbianos"),
+        isWinPhone = -1 !== e.indexOf("windows phone"),
+        isIpad =  -1 !== e.indexOf("ipad"),
+        k = isIphone || isWinPhone || isSymbianOS || isAndroid ||isIpad,
+        q = window.navigator && window.navigator.msPointerEnabled && window.navigator.msMaxTouchPoints && !window.PointerEvent,
+        t = window.PointerEvent && window.navigator.pointerEnabled && window.navigator.maxTouchPoints || q,
+        y = "devicePixelRatio" in window && 1 < window.devicePixelRatio || "matchMedia" in window && window.matchMedia("(min-resolution:144dppi)") &&
+            window.matchMedia("(min-resolution:144dppi)").matches,
+        l = document.documentElement,
+        A = a && "transition" in l.style,
+        x = "WebKitCSSMatrix" in window && "m11" in new window.WebKitCSSMatrix && !r,
+        B = "MozPerspective" in l.style,
+        z = "OTransition" in l.style,
+        G = !window.L_DISABLE_3D && (A || x || B || z) && !p,
+        p = !window.L_NO_TOUCH && !p && function() {
+                if (t || "ontouchstart" in l) return !0;
+                var a = document.createElement("div"),
+                    c = !1;
+                if (!a.setAttribute) return !1;
+                a.setAttribute("ontouchstart", "return;");
+                "function" === typeof a.ontouchstart && (c = !0);
+                a.removeAttribute("ontouchstart");
+                return c
+            }();
+    IDM.Browser = {
+        ie: a,
+        ielt9: c,
+        webkit: f,
+        gecko: gecko && !f && !d.opera && !a,
+        android: isAndroid,
+        android23: r,
+        iphone: isIphone,
+        ipad: isIpad,
+        symbian: isSymbianOS,
+        winphone: isWinPhone,
+        chrome: m,
+        ie3d: A,
+        webkit3d: x,
+        gecko3d: B,
+        opera3d: z,
+        any3d: G,
+        mobile: k,
+        mobileWebkit: k && f,
+        mobileWebkit3d: k && x,
+        mobileOpera: k && window.opera,
+        touch: p,
+        msPointer: q,
+        pointer: t,
+        retina: y
+    }
+}());
 
+//---------------------the IDM.GeomUtil class--------------------
 //get the bounding Rect of the points
 function Rect(minx,miny,maxx,maxy){
     this.tl = [minx || 0, miny || 0]; //top left point
@@ -52,52 +117,84 @@ Rect.prototype.isCollide = function(rect){
     return true;
 }
 
-GeomUtility.getBoundingRect = function(points){
-    var rect = new Rect();
-    //if there are less than 1 point
-    if(points.length < 2){
+IDM.GeomUtil = {
+
+    getBoundingRect: function (points) {
+        var rect = new Rect();
+        //if there are less than 1 point
+        if (points.length < 2) {
+            return rect;
+        }
+        var minX = 9999999, minY = 9999999, maxX = -9999999, maxY = -9999999;
+        for (var i = 0; i < points.length - 1; i += 2) {
+
+            if (points[i] > maxX) {
+                maxX = points[i];
+            }
+            if (points[i] < minX) {
+                minX = points[i];
+            }
+            if (points[i + 1] > maxY) {
+                maxY = points[i + 1];
+            }
+            if (points[i + 1] < minY) {
+                minY = points[i + 1];
+            }
+        }
+        rect.tl = [minX, minY];
+        rect.br = [maxX, maxY];
         return rect;
     }
-    var minX = 9999999, minY = 9999999, maxX = -9999999, maxY = -9999999;
-    for(var i = 0; i < points.length - 1; i += 2){
+}
+//---------------------the IDM.DomUtil class--------------------
+IDM.DomUtil = {
 
-        if(points[i] > maxX){
-            maxX = points[i];
+    getElementLeft: function (element) {
+        var actualLeft = element.offsetLeft;
+        var current = element.offsetParent;
+        while (current !== null) {
+            actualLeft += current.offsetLeft;
+            current = current.offsetParent;
         }
-        if(points[i] < minX){
-            minX = points[i];
+        return actualLeft;
+    },
+
+    getElementTop: function (element) {
+
+        var actualTop = element.offsetTop;
+        var current = element.offsetParent;
+        while (current !== null) {
+            actualTop += current.offsetTop;
+            current = current.offsetParent;
         }
-        if(points[i+1] > maxY){
-            maxY = points[i+1];
-        }
-        if(points[i+1] < minY){
-            minY = points[i+1];
-        }
+        return actualTop;
+    },
+
+    getTranslateString: function(point) {
+        var dim = IDM.Browser.webkit3d;
+        return "translate" + (dim ? "3d" : "") + "(" + point[0] + "px," + point[1] + "px" + ((dim ? ",0" : "") + ")");
+    },
+
+    getPos: function (element) {
+        return element._idm_pos ? element._idm_pos : [IDM.DomUtil.getElementLeft(element), IDM.DomUtil.getElementTop(element)];
+    },
+    setPos: function (element, point) {
+        element._idm_pos = point;
+        IDM.Browser.any3d ? element.style[IDM.DomUtil.TRANSFORM] = IDM.DomUtil.getTranslateString(point) : (element.style.left = point[0] + "px", element.style.top = point[1] + "px")
+    },
+
+    testProp: function(props) {
+        for (var c =
+            document.documentElement.style, i = 0; i < props.length; i++)
+            if (props[i] in c) return props[i];
+        return false;
     }
-    rect.tl = [minX, minY];
-    rect.br = [maxX, maxY];
-    return rect;
 }
 
-function getElementLeft(element) {
-    var actualLeft = element.offsetLeft;
-    var current = element.offsetParent;
-    while (current !== null) {
-        actualLeft += current.offsetLeft;
-        current = current.offsetParent;
-    }
-    return actualLeft;
-}
-function getElementTop(element) {
+IDM.DomUtil.TRANSFORM = IDM.DomUtil.testProp(["transform", "WebkitTransform", "OTransform", "MozTransform", "msTransform"]);
+IDM.DomUtil.TRANSITION = IDM.DomUtil.testProp(["webkitTransition", "transition", "OTransition", "MozTransition", "msTransition"]);
+IDM.DomUtil.TRANSITION_END = "webkitTransition" === IDM.DomUtil.TRANSITION || "OTransition" === IDM.DomUtil.TRANSITION ? IDM.DomUtil.TRANSITION + "End" : "transitionend";
 
-    var actualTop = element.offsetTop;
-    var current = element.offsetParent;
-    while (current !== null) {
-        actualTop += current.offsetTop;
-        current = current.offsetParent;
-    }
-    return actualTop;
-}
 //---------------------the Mall class--------------------
 function Mall(){
     var _this = this;
@@ -495,9 +592,12 @@ var default2dTheme = {
     },
 
     fontStyle:{
+        opacity: 1,
+        textAlign: "center",
+        textBaseline: "middle",
         color: "#333333",
-        fontsize: 14,
-        fontface: "'Lantinghei SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Helvetica Neue', Helvetica, Arial, sans-serif  "
+        fontsize: 13,
+        fontface: "'Lantinghei SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Helvetica Neue', Helvetica, STHeiTi, Arial, sans-serif  "
     },
 
     pubPointImg: {
@@ -625,7 +725,7 @@ function ParseModel(json, is3d){
         //floor geometry
         for(var i=0; i<json.data.Floors.length; i++){
             var floor = json.data.Floors[i];
-            floor.rect = GeomUtility.getBoundingRect(floor.Outline[0][0]);
+            floor.rect = IDM.GeomUtil.getBoundingRect(floor.Outline[0][0]);
 
             if(is3d) { // for 3d model
                 var floorObj = new THREE.Object3D();
@@ -657,7 +757,7 @@ function ParseModel(json, is3d){
             for(var j=0; j<floor.FuncAreas.length; j++){
 
                 var funcArea = floor.FuncAreas[j];
-                funcArea.rect = GeomUtility.getBoundingRect(funcArea.Outline[0][0]);
+                funcArea.rect = IDM.GeomUtil.getBoundingRect(funcArea.Outline[0][0]);
 
                 if(is3d) {
                     points = parsePoints(funcArea.Outline[0][0]);

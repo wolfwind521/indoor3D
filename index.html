@@ -34,7 +34,7 @@
     var loader = new IndoorMapLoader(indoorMap.is3d);
     loader.load('data/北京-1-爱琴海购物中心.json', function(mall){
         testjson = mall.jsonData;
-        indoorMap.parse(testjson).setSelectable(true).showAreaNames(false).setMovable(true);
+        indoorMap.parse(testjson).setSelectable(false).showAreaNames(true).setMovable(true);
         indoorMap.selectById(54487);
         var ul = IndoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
