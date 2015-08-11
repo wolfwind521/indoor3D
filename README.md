@@ -1,7 +1,11 @@
 indoor3D
 ========
 
-This is a javascript lib based on three.js to show a 3D indoor map
+This is a javascript lib based on three.js to show an indoor map
+
+#Demo
+2D Map Demo Page: http://wolfwind521.github.io/2dmap
+3D Map Demo Page: http://wolfwind521.github.io
 
 #Usage
 a simplest example: 

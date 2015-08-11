@@ -2,6 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0 user-scalable=no">
     <title></title>
 </head>
 <body>
@@ -20,7 +21,7 @@
     var stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
+    //document.body.appendChild(stats.domElement);
     animate();
 
     var params = {
@@ -34,7 +35,7 @@
     var loader = new IndoorMapLoader(indoorMap.is3d);
     loader.load('data/北京-1-爱琴海购物中心.json', function(mall){
         testjson = mall.jsonData;
-        indoorMap.parse(testjson).setSelectable(false).showAreaNames(true).setMovable(true);
+        indoorMap.parse(testjson).setSelectable(true).showAreaNames(true).setMovable(true);
         indoorMap.selectById(54487);
         var ul = IndoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
@@ -57,7 +58,7 @@
 </script>
 <!-- buttons just for test-->
 <ul class="testButton">
-    <li onclick="indoorMap.zoomIn(0.8)">+</li>
+    <li onclick="indoorMap.zoomIn(1.2)">+</li>
     <li onclick="indoorMap.zoomOut(0.8)">-</li>
     <li onclick="indoorMap.setTopView()">Top View</li>
     <li onclick="indoorMap.setDefaultView()">Default View</li>
