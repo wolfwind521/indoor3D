@@ -78,7 +78,7 @@ IDM.Browser = {};
         ie: a,
         ielt9: c,
         webkit: f,
-        gecko: gecko && !f && !d.opera && !a,
+        gecko: gecko && !f && !window.opera && !a,
         android: isAndroid,
         android23: r,
         iphone: isIphone,
