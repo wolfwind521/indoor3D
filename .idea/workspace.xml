@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="22d3820f-b5be-46e0-87d6-2fa39da291be" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/IndoorMap.js" afterPath="$PROJECT_DIR$/js/IndoorMap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/IndoorMap2d.js" afterPath="$PROJECT_DIR$/js/IndoorMap2d.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/indoor3D.css" afterPath="$PROJECT_DIR$/css/indoor3D.css" />
     </list>
     <ignored path="indoor3D.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,33 +29,13 @@
     <favorites_list name="indoor3D" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.46488094">
+    <splitter split-orientation="horizontal" split-proportion="0.35416666">
       <split-first>
         <leaf>
-          <file leaf-file-name="IndoorMap2d.js" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/js/IndoorMap2d.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.95671" vertical-offset="12627" max-vertical-offset="14220">
-                  <caret line="886" column="28" selection-start-line="886" selection-start-column="28" selection-end-line="886" selection-end-column="28" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="three.min.js" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/js/three.min.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="8504" max-vertical-offset="12390">
-                  <caret line="583" column="635" selection-start-line="583" selection-start-column="635" selection-end-line="583" selection-end-column="635" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="json.json" pinned="false" current-in-tab="false">
+          <file leaf-file-name="json.json" pinned="false" current-in-tab="true">
             <entry file="file://$USER_HOME$/Desktop/json.json">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="570">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="712">
                   <caret line="0" column="1" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="1" />
                   <folding>
                     <element signature="n#!!block;n#scene#0;n#!!top" expanded="false" />
@@ -84,7 +62,7 @@
           <file leaf-file-name="IndoorMap.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/js/IndoorMap.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-14.1" vertical-offset="13032" max-vertical-offset="13755">
+                <state vertical-scroll-proportion="-237.76666" vertical-offset="6322" max-vertical-offset="13755">
                   <caret line="958" column="5" selection-start-line="958" selection-start-column="5" selection-end-line="958" selection-end-column="5" />
                   <folding>
                     <element signature="e#1558#4038#0" expanded="false" />
@@ -93,11 +71,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="IndoorMap2d.js" pinned="false" current-in-tab="false">
+          <file leaf-file-name="IndoorMap2d.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/js/IndoorMap2d.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-23.1" vertical-offset="13257" max-vertical-offset="14220">
-                  <caret line="930" column="5" selection-start-line="930" selection-start-column="5" selection-end-line="930" selection-end-column="5" />
+                <state vertical-scroll-proportion="1.6709957" vertical-offset="12852" max-vertical-offset="14220">
+                  <caret line="934" column="34" selection-start-line="934" selection-start-column="24" selection-end-line="934" selection-end-column="34" />
                   <folding />
                 </state>
               </provider>
@@ -106,8 +84,8 @@
           <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/index.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-8.416667" vertical-offset="383" max-vertical-offset="1095">
-                  <caret line="39" column="32" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="32" />
+                <state vertical-scroll-proportion="-20.916666" vertical-offset="383" max-vertical-offset="1125">
+                  <caret line="59" column="19" selection-start-line="59" selection-start-column="19" selection-end-line="59" selection-end-column="19" />
                   <folding>
                     <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
                   </folding>
@@ -115,11 +93,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="indoor3D.css" pinned="false" current-in-tab="true">
+          <file leaf-file-name="indoor3D.css" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/indoor3D.css">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
-                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="149" max-vertical-offset="930">
+                  <caret line="48" column="22" selection-start-line="48" selection-start-column="22" selection-end-line="48" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -149,9 +127,9 @@
         <option value="$PROJECT_DIR$/../MapEditor/爱琴海购物中心-test.fangcheng.cn.json" />
         <option value="$USER_HOME$/Desktop/json.json" />
         <option value="$PROJECT_DIR$/data/世贸天阶.json" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/IndoorMap.js" />
         <option value="$PROJECT_DIR$/js/IndoorMap2d.js" />
+        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/css/indoor3D.css" />
       </list>
     </option>
@@ -735,29 +713,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Desktop/json.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="871">
-          <caret line="0" column="1" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="1" />
-          <folding>
-            <element signature="n#!!block;n#scene#0;n#!!top" expanded="false" />
-            <element signature="e#1431#1556#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/HTML5.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334" vertical-offset="30374" max-vertical-offset="35295">
           <caret line="2041" column="19" selection-start-line="2041" selection-start-column="19" selection-end-line="2041" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="8504" max-vertical-offset="12390">
-          <caret line="583" column="635" selection-start-line="583" selection-start-column="635" selection-end-line="583" selection-end-column="635" />
           <folding />
         </state>
       </provider>
@@ -769,26 +728,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/IndoorMap.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.1" vertical-offset="13032" max-vertical-offset="13755">
-          <caret line="958" column="5" selection-start-line="958" selection-start-column="5" selection-end-line="958" selection-end-column="5" />
-          <folding>
-            <element signature="e#1558#4038#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.416667" vertical-offset="383" max-vertical-offset="1095">
-          <caret line="39" column="32" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="32" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/OrbitControls.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="16.466667" vertical-offset="4409" max-vertical-offset="8175">
@@ -797,18 +736,57 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/IndoorMap2d.js">
+    <entry file="file://$PROJECT_DIR$/js/IndoorMap.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-23.1" vertical-offset="13257" max-vertical-offset="14220">
-          <caret line="930" column="5" selection-start-line="930" selection-start-column="5" selection-end-line="930" selection-end-column="5" />
+        <state vertical-scroll-proportion="-237.76666" vertical-offset="6322" max-vertical-offset="13755">
+          <caret line="958" column="5" selection-start-line="958" selection-start-column="5" selection-end-line="958" selection-end-column="5" />
+          <folding>
+            <element signature="e#1558#4038#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/three.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="8504" max-vertical-offset="12390">
+          <caret line="583" column="635" selection-start-line="583" selection-start-column="635" selection-end-line="583" selection-end-column="635" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Desktop/json.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="871">
+          <caret line="0" column="1" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="1" />
+          <folding>
+            <element signature="n#!!block;n#scene#0;n#!!top" expanded="false" />
+            <element signature="e#1431#1556#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.916666" vertical-offset="383" max-vertical-offset="1125">
+          <caret line="59" column="19" selection-start-line="59" selection-start-column="19" selection-end-line="59" selection-end-column="19" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/indoor3D.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="149" max-vertical-offset="930">
+          <caret line="48" column="22" selection-start-line="48" selection-start-column="22" selection-end-line="48" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/IndoorMap2d.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.6709957" vertical-offset="12852" max-vertical-offset="14220">
+          <caret line="934" column="34" selection-start-line="934" selection-start-column="24" selection-end-line="934" selection-end-column="34" />
           <folding />
         </state>
       </provider>

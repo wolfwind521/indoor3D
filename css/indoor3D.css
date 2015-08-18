@@ -28,19 +28,28 @@
 }
 
 .floorsUI{
-    top:10px;
+    top:100px;
 }
 
 .testButton{
-    top: 400px;
+    margin-left: auto;
+    margin-right: 2px;
+    top: 100px;
+    float:right;
+    width: 100%;
 }
+.testButton ul{
+    float: right;
 
+}
 .floorsUI li, .testButton li{
     max-width: 100px;
     padding: 10px;
     background-color: #e8e8e8 ;
     border: 1px solid #bbbbbb;
     text-align: center;
+    list-style-type:none;
+
 }
 
 .floorsUI .selected{
