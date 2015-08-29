@@ -335,22 +335,22 @@ var default3dTheme = {
     //rooms' style
     room: function (type, category) {
         var roomStyle;
-        if(category == undefined) {
+        if(!category) {
             switch (type) {
 
-                case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
+                case 100: //hollow. u needn't change this color. because i will make a hole on the model in the final version.
                     return {
                         color: "#F2F2F2",
                         opacity: 0.8,
                         transparent: true
                     }
-                case "300": //closed area
+                case 300: //closed area
                     return {
                         color: "#AAAAAA",
                         opacity: 0.7,
                         transparent: true
                     };
-                case "400": //empty shop
+                case 400: //empty shop
                     return {
                         color: "#D3D3D3",
                         opacity: 0.7,
@@ -485,22 +485,22 @@ var default2dTheme = {
     //rooms' style
     room: function (type, category) {
         var roomStyle;
-        if(category == undefined) {
+        if(!category) {
             switch (type) {
 
-                case "100": //hollow. u needn't change this color. because i will make a hole on the model in the final version.
+                case 100: //hollow. u needn't change this color. because i will make a hole on the model in the final version.
                     return {
                         color: "#F2F2F2",
                         opacity: 0.8,
                         transparent: true
                     }
-                case "300": //closed area
+                case 300: //closed area
                     return {
                         color: "#AAAAAA",
                         opacity: 0.7,
                         transparent: true
                     };
-                case "400": //empty shop
+                case 400: //empty shop
                     return {
                         color: "#D3D3D3",
                         opacity: 0.7,
@@ -771,7 +771,7 @@ function ParseModel(json, is3d){
                     //solid model
                     extrudeSettings = {amount: floorHeight, bevelEnabled: false};
                     geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                    material = new THREE.MeshLambertMaterial(mall.theme.room(funcArea.Type, funcArea.Category));
+                    material = new THREE.MeshLambertMaterial(mall.theme.room(parseInt(funcArea.Type), funcArea.Category));
                     mesh = new THREE.Mesh(geometry, material);
                     mesh.type = "solidroom";
                     mesh.id = funcArea._id;
@@ -785,7 +785,7 @@ function ParseModel(json, is3d){
 
                     floorObj.add(wire);
                 }else{
-                    funcArea.fillColor = mall.theme.room(funcArea.Type, funcArea.Category).color;
+                    funcArea.fillColor = mall.theme.room(parseInt(funcArea.Type), funcArea.Category).color;
                     funcArea.strokeColor = mall.theme.strokeStyle.color;
 
                 }

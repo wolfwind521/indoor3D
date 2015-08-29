@@ -162,9 +162,9 @@ IndoorMap2d = function(mapdiv){
         return _this;
     }
 
-    this.setSelectionMarker = function(marker){
-        //_marker = marker;
-    }
+//    this.setSelectionMarker = function(marker){
+//        //_marker = marker;
+//    }
 
     //set if the objects are selectable
     this.setSelectable = function (selectable) {
@@ -674,7 +674,7 @@ Canvas2DRenderer = function (map) {
         _ctx.setTransform(1,0,0,1,0,0);
         for(var i = 0 ; i < _curFloor.FuncAreas.length; i++) {
             var funcArea = _curFloor.FuncAreas[i];
-            if(funcArea.Category == undefined && funcArea.Type == 100){ //hollow area
+            if((!funcArea.Category) && parseInt(funcArea.Type) == 100){ //hollow area
                 continue;
             }
 
@@ -730,7 +730,7 @@ Canvas2DRenderer = function (map) {
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};
             var funcArea = funcAreaJson[i];
-            if(funcArea.Category == undefined && ((funcArea.Type == "100") || (funcArea.Type == 300))){
+            if((!funcArea.Category) && ((parseInt(funcArea.Type) == 100) || (parseInt(funcArea.Type) == 300))){
                 name.text = "";
                 name.halfWidth = 0;
                 name.halfHeight = 0;
