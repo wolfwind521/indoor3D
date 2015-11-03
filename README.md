@@ -5,6 +5,7 @@ This is a javascript lib based on three.js to show an indoor map
 
 #Demo
 2D Map Demo Page: http://wolfwind521.github.io/2dmap
+
 3D Map Demo Page: http://wolfwind521.github.io
 
 #Usage
@@ -16,12 +17,13 @@ a simplest example:
 <script src="js/three.min.js"></script>
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
-<script src="js/Indoor3D.js"></script>
-<link href="css/indoor3D.css" rel="stylesheet">
+<script src="js/IndoorMap.js"></script>
+<script src="js/Projector.js"></script>
+<script src="js/IndoorMap2d.js"></script>
+<script src="js/IndoorMap3d.js"></script>
 <script>
-    var indoorMap = new Indoor3D();
-    indoorMap.load('B000A9R4FE.json');
-    indoorMap.showFloor(1);
+    var map = new IndoorMap();
+    map.load('data/testMapData.json').showFloor(1);
 </script>
 </body>
 </html>
@@ -34,20 +36,22 @@ a little more complex example：
 <script src="js/three.min.js"></script>
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
-<script src="js/Indoor3D.js"></script>
+<script src="js/Projector.js"></script>
+<script src="js/IndoorMap.js"></script>
+<script src="js/IndoorMap2d.js"></script>
+<script src="js/IndoorMap3d.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 
 <div id="indoor3d" style="width: 800px; height: 500px"></div>
 <script>
     var params = {
-        mapDiv:"indoor3d"
+        mapDiv:"indoor3d",
+        dim:"3d"
     }
-    var indoorMap = Indoor3D(params);
-    indoorMap.load('B000A9R4FE.json', function(){
-        indoorMap.showAllFloors();
-        indoorMap.showLabels(true);
-        indoorMap.setSelectable(true);
-        var ul = indoorMap.getUI(indoorMap);
+    var map = IndoorMap(params);
+    map.load('data/testMapData.json', function(){
+        map.showAllFloors().showAreaNames(true).setSelectable(true);
+        var ul = IndoorMap.getUI(map);
         document.body.appendChild(ul);
     });
 </script>
@@ -55,57 +59,69 @@ a little more complex example：
 </body>
 </html>
 ```
+The explanation is as follows:
 1) include the required js files
 ```html
 <script src="js/three.min.js"></script>
 <script src="js/Detector.js"></script>
 <script src="js/OrbitControls.js"></script>
-<script src="js/Indoor3D.js"></script>
+<script src="js/Projector.js"></script>
+<script src="js/IndoorMap.js"></script>
 <script src="js/IndoorMap2d.js"></script>
 <script src="js/IndoorMap3d.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 ```
   - [three.min.js](http://threejs.org/): a 3D javascript library
   - Detector: detects whether the browser support the webgl. if it does not, threejs switches to a normal canvas renderer.
-  - OrbitControls: handles the user interactions to zoom, pan and pivot
+  - OrbitControls: handles the user interactions to zoom, pan and pivot. (Only used in 3D version)
+  - Projector: user selection detection used by threejs. (Only used in 3D version)
 
-2) set up the parent `<div>` node of the indoor map and pass the params
+2) set up the parameters of the indoor map and pass it to the creator
 ```js
-var params={mapDiv:"indoor3d"};
-var indoorMap = Indoor3D(params);
+var params={mapDiv:"indoor3d",dim:"3d"};
+var indoorMap = IndoorMap(params);
 ```
-So there must be a corresponding `<div id="indoor3d">` tag in your html codes, or it will create a fullscreen map.
-If there is no params passed to Indoor3D, it will create a fullscreen one as well:
+optional parameters:
+@mapDiv: if you have create your own <div> as a map container, u can specify its id here, or it will create a full screen map.
+@dim: "2d" or "3d". "3d" as default value. But the final result depends on your device. If it doesn't support WebGL, it will show a 2d map even if u set "3d".
+
+
+So if there is no params passed to IndoorMap, it will create a fullscreen 3D map by default:
 ```js
-var indoorMap = new Indoor3D();
+var indoorMap = IndoorMap();
 ```
 
 3) load the map data, and set up its styles.
 ```js
-indoorMap.load('B000A9R4FE.json', function(){
-        indoorMap.showAllsFloor();
-        indoorMap.setSelectable(true);
+indoorMap.load('data/testMapData.json', function(){
+        map.setTheme(myTheme).showAllFloors().showAreaNames(true).setSelectable(true);
         var ul = IndoorMap.getUI(indoorMap);
         document.body.appendChild(ul);
     });
 ```
-the second parameter of the load() function is a callback function when the data is loaded.
-if you don't need the ui, you can also set the style outside the callback function:
+the second parameter of the load() function is a callback function when the data is successfully loaded.
+You can customize the style and interaction of your indoor map in it. You may call the functions separately:
 ```js
-indoorMap.load('B000A9R4FE.json');
-indoorMap.showFloor(1);
-indoorMap.setSelectable(true);
-indoorMap.showLabels(true);
+map.setTheme(myTheme);
+map.showAllFloors();
+map.showAreaNames(true);
+map.setSelectable(true);
 ```
-the style of the ui is defined in the css file. so you can specify it by yourself.
+or in a chain for convenience:
+
+```js
+map.setTheme(myTheme).showAllFloors().showAreaNames(true).setSelectable(true);
+```
+The UI is the buttons for switching floors. Its style is defined in the css file. so you can customize it by yourself.
 
 #User Reference
-There are two main classes:
+There are Three main classes:
   -IndoorMap
-  -Mall
+  -IndoorMap2d
+  -IndoorMap3d
 
 
-## IndoorMap
+## IndoorMap2d
 ###methods:
 **.load(fileName, callback)**
 

@@ -12,6 +12,7 @@ IndoorMap2d = function(mapdiv){
     var _curFloorId = 0;
     var _selectionListener = null;
     var _selected, _selectedOldColor;
+    var _theme = null;
 
     this.options = {
         showNames : true,
@@ -26,7 +27,7 @@ IndoorMap2d = function(mapdiv){
 
     this.renderer = null;
     this.is3d = false;
-    this.theme = null;
+
     //var _marker;
 
     this.init = function(){
@@ -51,22 +52,49 @@ IndoorMap2d = function(mapdiv){
     }
 
     this.setTheme = function(theme){
-        _this.theme = theme;
-        redraw();
-        return this;
+        if(_theme == null){
+            _theme = theme
+        } else if(_theme != theme) {
+            _theme = theme;
+            _this.parse(_this.mall.jsonData); //parse
+            redraw();
+        }
+        return _this;
+    }
+
+    this.theme = function(){
+        return _theme;
     }
 
     this.getMall = function(){
         return _this.mall;
     }
 
+    //load the map by the json file name
+    this.load = function (fileName, callback) {
+        _this.reset();
+        _theme = default2dTheme;
+        var loader = new IndoorMapLoader(false);
+        loader.load(fileName, function(mall){
+            _this.mall = mall;
+            _this.showFloor(_this.mall.getDefaultFloorId());
+            if(callback) {
+                callback();
+            }
+
+
+        });
+    }
+
     this.parse = function(json){
         _this.reset();
-        _this.mall = ParseModel(json, _this.is3d);
-        _this.theme = _this.mall.theme;
+        if(_theme == null) {
+            _theme = default2dTheme;
+        }
+        _this.mall = ParseModel(json, _this.is3d, _theme);
         _this.showFloor(_this.mall.getDefaultFloorId());
 
-        _mapDiv.style.background = _this.theme.background;
+        _mapDiv.style.background = _theme.background;
         return _this;
     }
 
@@ -178,7 +206,7 @@ IndoorMap2d = function(mapdiv){
         return _this;
     }
 
-    //se if the user can pan the camera
+    //set if the user can pan the camera
     this.setMovable = function(movable){
         _controls.enable = movable;
         return _this;
@@ -201,7 +229,7 @@ IndoorMap2d = function(mapdiv){
         if(obj != undefined) {
             //_this.focus(obj);
             _selectedOldColor = obj.fillColor;
-            obj.fillColor = _this.theme.selected;
+            obj.fillColor = _theme.selected;
             //var pos = _this.renderer.localToWorld(obj.Center);
             _selected = obj;
             redraw();
@@ -485,7 +513,7 @@ Canvas2DRenderer = function (map) {
             return;
         }
 
-        var theme = _map.theme;
+        var theme = _map.theme();
 
         //get render data
         _curFloor = _map.mall.getCurFloor();
@@ -664,7 +692,7 @@ Canvas2DRenderer = function (map) {
         //clear background
         _ctx.save();
         _ctx.setTransform(1,0,0,1,0,0);
-        _ctx.fillStyle = _map.theme.background;
+        _ctx.fillStyle = _map.theme().background;
         _ctx.fillRect(0,0,_canvasSize[0]*_devicePixelRatio, _canvasSize[1]*_devicePixelRatio);
         _ctx.restore();
     }
@@ -706,7 +734,7 @@ Canvas2DRenderer = function (map) {
 
     this.loadSpirtes = function(mall){
         if(mall != null && _sprites.length == 0 ){
-            var images = mall.theme.pubPointImg;
+            var images = _map.theme().pubPointImg;
             for( var key in images){
                 var loader = new THREE.ImageLoader();
 
@@ -725,7 +753,7 @@ Canvas2DRenderer = function (map) {
             _nameTexts.length = 0;
         }
         var funcAreaJson = mall.getFloorJson(mall.getCurFloorId()).FuncAreas;
-        var fontStyle = mall.theme.fontStyle;
+        var fontStyle = _map.theme().fontStyle;
         _ctx.font =  fontStyle.fontsize + "px/1.4 " + fontStyle.fontface;
         for(var i = 0 ; i < funcAreaJson.length; i++){
             var name = {};

@@ -14,55 +14,72 @@
 <script src="js/stats.min.js"></script>
 <script src="js/IndoorMap2d.js"></script>
 <script src="js/IndoorMap3d.js"></script>
+<script src="js/Theme.js"></script>
 <link href="css/indoor3D.css" rel="stylesheet">
 
 <div id="indoor3d" style="width: 800px; height: 500px; top:50px; left: 100px; position: absolute"></div>
 <script>
-    var stats = new Stats();
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.top = '0px';
-    //document.body.appendChild(stats.domElement);
-    animate();
 
     var params = {
-//        mapDiv:"indoor3d"
+        mapDiv:"indoor3d",
         dim:"2d"
     }
-    var indoorMap = IndoorMap(params);
-
-///--------------parse function test-------------------
-    var testjson;
-    var loader = new IndoorMapLoader(indoorMap.is3d);
-    loader.load('data/北京-1-爱琴海购物中心.json', function(mall){
-        testjson = mall.jsonData;
-        indoorMap.parse(testjson).setSelectable(true).showAreaNames(true).setMovable(true);
-        indoorMap.selectById(54487);
-        var ul = IndoorMap.getUI(indoorMap);
+    var map = IndoorMap(params);
+    map.load('data/testMapData.json', function(){
+        map.setTheme(picGenTheme);
+        map.showAreaNames(true).setSelectable(true);
+        var ul = IndoorMap.getUI(map);
         document.body.appendChild(ul);
     });
-
-///---------------load function test--------------------
-//    indoorMap.load('data/赛特购物中心.json', function(){
-//        indoorMap.showFloor(1);
-//        indoorMap.showAreaNames(true);
-//        indoorMap.setSelectable(true);
-//        var ul = indoorMap.getUI();
-//        document.body.appendChild(ul);
+//
+//    var stats = new Stats();
+//    stats.domElement.style.position = 'absolute';
+//    stats.domElement.style.top = '0px';
+//    //document.body.appendChild(stats.domElement);
+//    animate();
+//
+//    var params = {
+////        mapDiv:"indoor3d",
+////        dim:"2d",
+//        size:[800,500]
+//    }
+//    var map = IndoorMap(params);
+//    map.load()
+//
+/////--------------parse function test-------------------
+//    var testjson;
+//    var loader = new IndoorMapLoader(map.is3d);
+//    loader.load('data/testMapData.json', function(mall){
+//        testjson = mall.jsonData;
+//        map.parse(testjson).setSelectable(true).showAreaNames(true).setMovable(true);
+////        map.setTheme(picGenTheme);
+//        map.selectById(54487);
+//        var ul = IndoorMap.getUI(map);
+//        //document.body.appendChild(ul);
 //    });
-
-    function animate(){
-        requestAnimationFrame(animate);
-        stats.update();
-    }
+//
+/////---------------load function test--------------------
+////    map.load('data/赛特购物中心.json', function(){
+////        map.showFloor(1);
+////        map.showAreaNames(true);
+////        map.setSelectable(true);
+////        var ul = map.getUI();
+////        document.body.appendChild(ul);
+////    });
+//
+//    function animate(){
+//        requestAnimationFrame(animate);
+//        stats.update();
+//    }
 
 </script>
 <!-- buttons just for test-->
 <div class="testButton">
 <ul >
-    <li onclick="indoorMap.zoomIn(1.2)">+</li>
-    <li onclick="indoorMap.zoomOut(0.8)">-</li>
-    <li onclick="indoorMap.setTopView()">Top View</li>
-    <li onclick="indoorMap.setDefaultView()">Default View</li>
+    <li onclick="map.zoomIn(1.2)">+</li>
+    <li onclick="map.zoomOut(0.8)">-</li>
+    <li onclick="map.setTopView()">Top View</li>
+    <li onclick="map.setDefaultView()">Default View</li>
 
 </ul>
 </div>

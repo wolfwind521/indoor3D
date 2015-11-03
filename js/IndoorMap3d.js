@@ -4,7 +4,7 @@
 
 IndoorMap3d = function(mapdiv){
     var _this = this;
-    var _theme;
+    var _theme = null;
     var _mapDiv = mapdiv,
         _canvasWidth = _mapDiv.clientWidth,
         _canvasWidthHalf = _canvasWidth / 2,
@@ -63,8 +63,13 @@ IndoorMap3d = function(mapdiv){
     }
 
     this.setTheme = function(theme){
-        _theme = theme;
-        return this;
+        if(_theme == null){
+            _theme = theme
+        } else if(_theme != theme) {
+            _theme = theme;
+            _this.parse(_this.mall.jsonData); //parse
+        }
+        return _this;
     }
 
     this.theme = function(){
@@ -73,7 +78,8 @@ IndoorMap3d = function(mapdiv){
 
     //load the map by the json file name
     this.load = function (fileName, callback) {
-        var loader = new IndoorMapLoader(_this.is3d);
+        var loader = new IndoorMapLoader(true);
+        _theme = default3dTheme;
         loader.load(fileName, function(mall){
             _this.mall = mall;
             _scene.add(_this.mall.root);
@@ -81,7 +87,7 @@ IndoorMap3d = function(mapdiv){
             if(callback) {
                 callback();
             }
-            _this.renderer.setClearColor(_this.mall.theme.background);
+            _this.renderer.setClearColor(_theme.background);
             if(_curFloorId == 0){
                 _this.showAllFloors();
             }else{
@@ -89,16 +95,20 @@ IndoorMap3d = function(mapdiv){
             }
 
         });
+        return _this;
     }
 
     //parse the json file
     this.parse = function(json){
-        _this.mall = ParseModel(json, _this.is3d);
+        if(_theme == null) {
+            _theme = default3dTheme;
+        }
+        _this.mall = ParseModel(json, _this.is3d, _theme);
         _scene.mall = _this.mall;
         _this.showFloor(_this.mall.getDefaultFloorId());
-        _this.renderer.setClearColor(_this.mall.theme.background);
+        _this.renderer.setClearColor(_theme.background);
         _scene.add(_this.mall.root);
-        _mapDiv.style.background = _this.mall.theme.background;
+        _mapDiv.style.background = _theme.background;
         return _this;
     }
 
@@ -141,10 +151,10 @@ IndoorMap3d = function(mapdiv){
 
     //show floor by id
     this.showFloor = function(floorid) {
+        _curFloorId = floorid;
         if(_scene.mall == null){
             return;
         }
-        _curFloorId = floorid;
         _scene.mall.showFloor(floorid);
         _this.adjustCamera();
         if(_showPubPoints) {
@@ -184,6 +194,12 @@ IndoorMap3d = function(mapdiv){
         return _this;
     }
 
+    //set if the user can pan the camera
+    this.setMovable = function(movable){
+        _controls.enable = movable;
+        return _this;
+    }
+
     //show the labels
     this.showAreaNames = function(show) {
         _showNames = show == undefined ? true : show;
@@ -209,7 +225,7 @@ IndoorMap3d = function(mapdiv){
 
     //select object by id
     this.selectById = function(id){
-        var floor = _this.getCurFloor();
+        var floor = _this.mall.getCurFloor();
         for(var i = 0; i < floor.children.length; i++){
             if(floor.children[i].id && floor.children[i].id == id) {
                 if (_selected) {
@@ -223,7 +239,7 @@ IndoorMap3d = function(mapdiv){
     //select object(just hight light it)
     function select(obj){
         obj.currentHex = _selected.material.color.getHex();
-        obj.material.color = new THREE.Color(_this.mall.theme.selected);
+        obj.material.color = new THREE.Color(_theme.selected);
         obj.scale = new THREE.Vector3(2,2,2);
     }
 
@@ -311,7 +327,7 @@ IndoorMap3d = function(mapdiv){
     //load Sprites
     function loadSprites(){
         if(_this.mall != null && _spriteMaterials.length == 0){
-            var images = _this.mall.theme.pubPointImg;
+            var images = _theme.pubPointImg;
             for(var key in images){
                 var texture = THREE.ImageUtils.loadTexture(images[key], undefined, redraw);
                 var material = new THREE.SpriteMaterial({map:texture});
@@ -418,7 +434,7 @@ IndoorMap3d = function(mapdiv){
         }
         var funcAreaJson = _this.mall.getFloorJson(_this.mall.getCurFloorId()).FuncAreas;
         for(var i = 0 ; i < funcAreaJson.length; i++){
-            var sprite = makeTextSprite(funcAreaJson[i].Name_en, _this.mall.theme.fontStyle);
+            var sprite = makeTextSprite(funcAreaJson[i].Name_en, _theme.fontStyle);
             sprite.oriX = funcAreaJson[i].Center[0];
             sprite.oriY = funcAreaJson[i].Center[1];
             _nameSprites.add(sprite);
@@ -458,10 +474,16 @@ IndoorMap3d = function(mapdiv){
     }
 
     function clearNameSprites(){
+        if(_nameSprites == null){
+            return;
+        }
         _nameSprites.remove(_nameSprites.children);
         _nameSprites.children.length = 0;
     }
     function clearPubPointSprites(){
+        if(_pubPointSprites == null){
+            return;
+        }
         _pubPointSprites.remove(_pubPointSprites.children);
         _pubPointSprites.children.length = 0;
     }
