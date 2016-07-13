@@ -3,6 +3,8 @@ indoor3D
 
 This is a javascript lib based on three.js to show an indoor map
 
+**A GUI map eidtor software is under development. Currently you must draw a map with other software and convert it to the JSON format used in this project.**
+
 #Demo
 2D Map Demo Page: http://wolfwind521.github.io/2dmap
 
