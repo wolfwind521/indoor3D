@@ -1,6 +1,8 @@
 indoor3D
-========
 
+**OOPS! This project is deprecated. I haven't updated its codes or documentation for a long long time.
+You may play with it, but don't use it in real applicaition.
+========
 This is a javascript lib based on three.js to show an indoor map
 
 **A GUI map eidtor software is under development. Currently you must draw a map with other software and convert it to the JSON format used in this project.**
