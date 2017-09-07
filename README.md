@@ -1,18 +1,19 @@
 indoor3D
+====
 
-**OOPS! This project is deprecated. I haven't updated its codes or documentation for a long long time.
-You may play with it, but don't use it in real applicaition.
-========
-This is a javascript lib based on three.js to show an indoor map
+This is a javascript lib based on three.js to show an indoor map.
 
-**A GUI map eidtor software is under development. Currently you must draw a map with other software and convert it to the JSON format used in this project.**
+**This was an experimental project when I was learning javascript and webgl, and I haven't updated it since then.**
+**Thanks for the followers and feedbacks, I decide to update it again.**
 
-#Demo
+**A GUI map eidtor written by QT is under development. And I'm working on supporting the popular GeoJson format**
+
+# Demo #
 2D Map Demo Page: http://wolfwind521.github.io/2dmap
 
 3D Map Demo Page: http://wolfwind521.github.io
 
-#Usage
+# Usage #
 a simplest example: 
 ```html
 <!DOCTYPE html>
@@ -85,8 +86,8 @@ The explanation is as follows:
 var params={mapDiv:"indoor3d",dim:"3d"};
 var indoorMap = IndoorMap(params);
 ```
-optional parameters:
-@mapDiv: if you have create your own <div> as a map container, u can specify its id here, or it will create a full screen map.
+optional parameters:\
+@mapDiv: if you have create your own ``` <div> ``` as a map container, you can specify its id here, otherwise it will create a full screen map.\
 @dim: "2d" or "3d". "3d" as default value. But the final result depends on your device. If it doesn't support WebGL, it will show a 2d map even if u set "3d".
 
 
@@ -118,15 +119,15 @@ map.setTheme(myTheme).showAllFloors().showAreaNames(true).setSelectable(true);
 ```
 The UI is the buttons for switching floors. Its style is defined in the css file. so you can customize it by yourself.
 
-#User Reference
-There are Three main classes:
-  -IndoorMap
-  -IndoorMap2d
+# User Reference #
+There are Three main classes:\
+  -IndoorMap\
+  -IndoorMap2d\
   -IndoorMap3d
 
 
-## IndoorMap2d
-###methods:
+## IndoorMap2d ##
+### methods: ###
 **.load(fileName, callback)**
 
 loads a file. 
@@ -198,14 +199,14 @@ shows the floor by id. Notice this does not handle the labels.
 
 shows all the floors together. Notice this does not handle the labels.
 
-###
-## Mall:
-###Properties
+
+## Mall: ##
+### Properties ###
 **.floors**
 
 This is an array with all the floors of `[THREE.Object3D]`(http://threejs.org/docs/#Reference/Core/Object3D) type.
 
-###Methods:
+### Methods: ###
 **.getCurFloorId()**
 
 gets the `id` of the current floor.
